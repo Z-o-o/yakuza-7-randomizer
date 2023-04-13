@@ -12,6 +12,10 @@ to beat.
   
   Download the JSONSHuffler.py file. You will also require whatever tools necessary to package json files back into their
   .bin and .par files (most likely reARMP and Partool respectively). 
+
+Link for Partool: https://github.com/Kaplas80/ParManager/releases/tag/v1.3.3
+
+Link for reARMP: https://github.com/Ret-HZ/reARMP/releases/tag/v0.11.2
   
  ## Step 2:
   
