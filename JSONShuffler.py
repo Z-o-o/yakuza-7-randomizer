@@ -2,6 +2,7 @@
 import ijson
 import re
 import random
+import sys
 
 __author__ = "Zennith Boerger"
 __version__ = "0.1.0"
@@ -21,7 +22,7 @@ def get_id(enemy):
     return int(enemy.base_id)
 
 def main():
-    parser = ijson.parse(open(r'C:\Users\Zenni\Documents\GitHub\yakuza-7-randomizer\Test JSON\character_npc_soldier_personal_data.bin.json', r'r', encoding="utf8"))
+    parser = ijson.parse(open(str(sys.argv[1]), r'r', encoding="utf8"))
     # there are 18027 npc's
     soldiers = []
     index_list = []
@@ -35,7 +36,7 @@ def main():
         if re.match(r'^[0-9]+$', prefix) and event == 'map_key':
             new_progress = int(re.search(r'\d+', prefix).group())/_ENEMYCOUNT
             if (new_progress - old_progress) >= 0.1:
-                print(f'Progress {new_progress}')
+                print(f'Processing Enemies: {("%.2f" % (new_progress*100))}%')
                 old_progress = new_progress
             current_enemy.name = value
             current_enemy.base_id = re.search(r'\d+', prefix).group()
@@ -49,6 +50,8 @@ def main():
         # We need to store stats and names so we can create an Enemy object when its a valid enemy.
         # We need to keep track of the stats we get and the name, then add them into the list if they are valid
         # When we determine we are at a new enemy we need to redo the process
+    print(f'Processing Enemies: 100%')
+    print(f'Processing Enemies: Done!')
     valid_soldiers = []
     for s in soldiers:
         if s.base_id == "" or s.name == "" or s.stats == {}:
@@ -59,8 +62,11 @@ def main():
     # print(index_list)
     index_list.sort()
     random.shuffle(valid_soldiers)
+    print(f'Enemies Shuffled!')
 
+    print("Generating Statblocks!")
     enemy_blocks = {}
+    old_progress = 0
     for i in range(len(index_list)):
         enemy_block = f'\t\"{index_list[i]}\": {"{"}\n'
         soldiers[soldiers.index(valid_soldiers[i])].base_id = index_list[i]
@@ -79,9 +85,11 @@ def main():
             else:
                 enemy_block += f'\"{stat}\": {value},\n\t\t\t'
         enemy_blocks[valid_soldiers[i].name] = enemy_block
+    print("Statblocks Generated!")
     
-    fr = open(r'C:\Users\Zenni\Documents\GitHub\yakuza-7-randomizer\Test JSON\character_npc_soldier_personal_data.bin.json', r'r', encoding="utf8")
-    fw = open(r'character_npc_soldier_personal_data.bin.json', r'w', encoding="utf8")
+    print("Generating shuffled JSON!")
+    fr = open(str(sys.argv[1]), r'r', encoding="utf8")
+    fw = open(r'RENAME_ME.json', r'w', encoding="utf8")
     line = ""
     while True:
         line = fr.readline()
@@ -112,6 +120,7 @@ def main():
         current_id += 1
     fw.write("}")
     fw.close()
+    print("Shuffled JSON File Created!")
 
     print("Randomized!")
 
