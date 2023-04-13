@@ -3,6 +3,7 @@ import ijson
 import re
 import random
 import sys
+import msvcrt as m
 
 __author__ = "Zennith Boerger"
 __version__ = "0.1.0"
@@ -20,6 +21,9 @@ def get_id(enemy):
     if enemy.base_id == '':
         return -1
     return int(enemy.base_id)
+
+def wait():
+    m.getch()
 
 def main():
     parser = ijson.parse(open(str(sys.argv[1]), r'r', encoding="utf8"))
@@ -51,7 +55,7 @@ def main():
         # We need to keep track of the stats we get and the name, then add them into the list if they are valid
         # When we determine we are at a new enemy we need to redo the process
     print(f'Processing Enemies: 100%')
-    print(f'Processing Enemies: Done!')
+    print(f'Processing Enemies: Done!\n')
     valid_soldiers = []
     for s in soldiers:
         if s.base_id == "" or s.name == "" or s.stats == {}:
@@ -62,7 +66,7 @@ def main():
     # print(index_list)
     index_list.sort()
     random.shuffle(valid_soldiers)
-    print(f'Enemies Shuffled!')
+    print(f'Enemies Shuffled!\n')
 
     print("Generating Statblocks!")
     enemy_blocks = {}
@@ -85,7 +89,7 @@ def main():
             else:
                 enemy_block += f'\"{stat}\": {value},\n\t\t\t'
         enemy_blocks[valid_soldiers[i].name] = enemy_block
-    print("Statblocks Generated!")
+    print("Statblocks Generated!\n")
     
     print("Generating shuffled JSON!")
     fr = open(str(sys.argv[1]), r'r', encoding="utf8")
@@ -120,9 +124,10 @@ def main():
         current_id += 1
     fw.write("}")
     fw.close()
-    print("Shuffled JSON File Created!")
+    print("Shuffled JSON File Created!\n")
 
-    print("Randomized!")
+    print("Randomized! Press any key to close this window.")
+    wait()
 
 
 if __name__ == "__main__":
