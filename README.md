@@ -56,4 +56,4 @@ Link for reARMP: https://github.com/Ret-HZ/reARMP/releases/tag/v0.11.2
  
  ## Step 9:
   You have now successfully randomized your enemies in Yakuza: Like A Dragon. Nothing else is required and enjoy! If you'd like to randomize them again
-  follow this same process. I hope to make this process much easier in the near future.
+  follow this same process starting from Step 2. I hope to make this process much easier in the near future.
