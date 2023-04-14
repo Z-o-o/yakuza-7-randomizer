@@ -5,3 +5,5 @@
 Fights to test:
 
 Every boss fight (especially ishioda's wrecking ball fight)
+
+Progress - Every fight up to chapter 5 functions fine
