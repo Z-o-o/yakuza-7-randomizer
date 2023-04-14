@@ -9,7 +9,10 @@ __author__ = "Zennith Boerger"
 __version__ = "0.1.0"
 __license__ = "MIT"
 
+# Total enemy count including invalid/test enemies
 _ENEMYCOUNT = 18028
+# IDs to ignore so that no shenanigans happen like Mr Masochist replacing a boss
+_IGNORED_IDS = ['15363']
 
 class Enemy:
     def __init__(self, base_id, name, stats):
@@ -60,7 +63,7 @@ def main():
     for s in soldiers:
         if s.base_id == "" or s.name == "" or s.stats == {}:
             continue
-        if int(s.stats['hp']) > 0:
+        if int(s.stats['hp']) > 0 and _IGNORED_IDS.count(s.base_id) == 0:
             valid_soldiers.append(s)
             index_list.append(s.base_id)
     # print(index_list)
@@ -105,7 +108,7 @@ def main():
     for s in soldiers:
         if s.base_id == "" or s.name == "" or s.stats == {}:
             continue
-        if s.stats['hp'] == 0:
+        if s.stats['hp'] == 0 or _IGNORED_IDS.count(s.base_id) != 0:
             enemy_block = f'\t\"{s.base_id}\": {"{"}\n'
             enemy_block += f'\t\t\"{s.name}\": {"{"}\n\t\t\t'
             for stat in s.stats:

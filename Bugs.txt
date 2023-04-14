@@ -1,0 +1,8 @@
+1. At the end of the Yokohama Sewer Dungeon, the cleaning robot will be broken and unable to be fought
+2. Any animal enemy/enemy whose model can't be retrieved is replaced by a purple and red suit guy, the animals look really messed up
+3. Mr. Masochist CANNOT be randomized
+4. 
+
+Fights to test:
+
+Every boss fight (especially ishioda's wrecking ball fight)
