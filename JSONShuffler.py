@@ -12,7 +12,7 @@ __license__ = "MIT"
 # Total enemy count including invalid/test enemies
 _ENEMYCOUNT = 18028
 # IDs to ignore so that no shenanigans happen like Mr Masochist replacing a boss
-_IGNORED_IDS = ['15363']
+_IGNORED_IDS = ['15363', '17186']
 
 class Enemy:
     def __init__(self, base_id, name, stats):
