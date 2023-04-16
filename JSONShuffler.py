@@ -45,6 +45,7 @@ def scale_enemies(self, valid_soldiers):
         scaling_stats = initial_soldiers[i].stats
         for stat in stat_names:
             valid_soldiers[i].stats[stat] = scaling_stats[stat]
+    return valid_soldiers
 
 
 def main():
@@ -88,7 +89,6 @@ def main():
     
     index_list.sort()
     valid_soldiers = scale_enemies(valid_soldiers)
-    random.shuffle(valid_soldiers)
     print(f'Enemies Shuffled!\n')
 
     print("Generating Statblocks!")
