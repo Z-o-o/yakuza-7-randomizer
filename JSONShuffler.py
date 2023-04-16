@@ -12,7 +12,16 @@ __license__ = "MIT"
 # Total enemy count including invalid/test enemies
 _ENEMYCOUNT = 18028
 # IDs to ignore so that no shenanigans happen like Mr Masochist replacing a boss
-_IGNORED_IDS = ['15363', '17186']
+"""
+Current list of unrandomized enemies (in-order):
+    1. Mr. Masochist
+    2. Masato Arakawa
+    3. Ishioda Wrecking Ball
+    4. Normal Majima
+    5. Normal Saejima
+    6. Normal Kiryu
+"""
+_IGNORED_IDS = ['15363', '17186', '15435', '15603', '15604', '15640']
 
 class Enemy:
     def __init__(self, base_id, name, stats):
