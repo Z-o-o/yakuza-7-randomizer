@@ -105,7 +105,7 @@ def main():
     
     print("Generating shuffled JSON!")
     fr = open(str(sys.argv[1]), r'r', encoding="utf8")
-    fw = open(r'RENAME_ME.json', r'w', encoding="utf8")
+    fw = open(r'character_npc_soldier_personal_data.json', r'w', encoding="utf8")
     line = ""
     while True:
         line = fr.readline()
