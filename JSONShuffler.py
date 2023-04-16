@@ -37,14 +37,18 @@ def get_id(enemy):
 def wait():
     m.getch()
 
-def scale_enemies(self, valid_soldiers):
+def scale_enemies(valid_soldiers):
     initial_soldiers = valid_soldiers.copy()
     random.shuffle(valid_soldiers)
-    stat_names = ['hp', 'enemy_level', 'exp_point', 'money_point', 'money_drop_ratio', 'job_exp_point', 'attack', 'defence', 'dodge', 'accuracy', 'mp', 'sp_attack']
+    stat_names = ['hp', 'enemy_level', 'attack', 'defence', 'dodge', 'accuracy', 'mp', 'sp_attack']
+    invested_vagabonds = ['17203', '17989', '17205', '17204', '15701']
     for i in range(len(valid_soldiers)):
+        if invested_vagabonds.count(valid_soldiers[i].base_id) != 0:
+            continue
         scaling_stats = initial_soldiers[i].stats
         for stat in stat_names:
             valid_soldiers[i].stats[stat] = scaling_stats[stat]
+    print('Scaled Enemies')
     return valid_soldiers
 
 
@@ -86,7 +90,7 @@ def main():
         if int(s.stats['hp']) > 0 and _IGNORED_IDS.count(s.base_id) == 0:
             valid_soldiers.append(s)
             index_list.append(s.base_id)
-    
+
     index_list.sort()
     valid_soldiers = scale_enemies(valid_soldiers)
     print(f'Enemies Shuffled!\n')
