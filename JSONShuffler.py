@@ -84,9 +84,9 @@ def main():
     enemy_blocks = {}
     old_progress = 0
     for i in range(len(index_list)):
-        enemy_block = f'\t\"{index_list[i]}\": {"{"}\n'
+        enemy_block = f'  \"{index_list[i]}\": {"{"}\n'
         soldiers[soldiers.index(valid_soldiers[i])].base_id = index_list[i]
-        enemy_block += f'\t\t\"{valid_soldiers[i].name}\": {"{"}\n\t\t\t'
+        enemy_block += f'    \"{valid_soldiers[i].name}\": {"{"}\n      '
         for stat in valid_soldiers[i].stats:
             value = valid_soldiers[i].stats[stat]
             if value == "reARMP_rowIndex":
@@ -95,11 +95,11 @@ def main():
                 end_comma = ","
                 if index_list[i] == '18027':
                     end_comma = ""
-                enemy_block += f'\"{stat}\": {value}\n\t\t{"}"}\n\t{"}"}{end_comma}\n'
+                enemy_block += f'\"{stat}\": {value}\n    {"}"}\n  {"}"}{end_comma}\n'
             elif stat == "reARMP_isValid":
-                enemy_block += f'\"{stat}\": \"{value}\",\n\t\t\t'
+                enemy_block += f'\"{stat}\": \"{value}\",\n      '
             else:
-                enemy_block += f'\"{stat}\": {value},\n\t\t\t'
+                enemy_block += f'\"{stat}\": {value},\n      '
         enemy_blocks[valid_soldiers[i].name] = enemy_block
     print("Statblocks Generated!\n")
     
@@ -118,18 +118,18 @@ def main():
         if s.base_id == "" or s.name == "" or s.stats == {}:
             continue
         if s.stats['hp'] == 0 or _IGNORED_IDS.count(s.base_id) != 0:
-            enemy_block = f'\t\"{s.base_id}\": {"{"}\n'
-            enemy_block += f'\t\t\"{s.name}\": {"{"}\n\t\t\t'
+            enemy_block = f'  \"{s.base_id}\": {"{"}\n'
+            enemy_block += f'    \"{s.name}\": {"{"}\n      '
             for stat in s.stats:
                 value = s.stats[stat]
                 if value == "reARMP_rowIndex":
                     continue
                 if stat == "reARMP_rowIndex":
-                    enemy_block += f'\"{stat}\": {value}\n\t\t{"}"}\n\t{"}"},\n'
+                    enemy_block += f'\"{stat}\": {value}\n    {"}"}\n  {"}"},\n'
                 elif stat == "reARMP_isValid":
-                    enemy_block += f'\"{stat}\": \"{value}\",\n\t\t\t'
+                    enemy_block += f'\"{stat}\": \"{value}\",\n      '
                 else:
-                    enemy_block += f'\"{stat}\": {value},\n\t\t\t'
+                    enemy_block += f'\"{stat}\": {value},\n      '
             fw.write(enemy_block)
         else:
             fw.write(enemy_blocks[s.name])
