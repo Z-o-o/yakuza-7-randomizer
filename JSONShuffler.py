@@ -37,6 +37,16 @@ def get_id(enemy):
 def wait():
     m.getch()
 
+def scale_enemies(self, valid_soldiers):
+    initial_soldiers = valid_soldiers.copy()
+    random.shuffle(valid_soldiers)
+    stat_names = ['hp', 'enemy_level', 'exp_point', 'money_point', 'money_drop_ratio', 'job_exp_point', 'attack', 'defence', 'dodge', 'accuracy', 'mp', 'sp_attack']
+    for i in range(len(valid_soldiers)):
+        scaling_stats = initial_soldiers[i].stats
+        for stat in stat_names:
+            valid_soldiers[i].stats[stat] = scaling_stats[stat]
+
+
 def main():
     parser = ijson.parse(open(str(sys.argv[1]), r'r', encoding="utf8"))
     # there are 18027 npc's
@@ -75,8 +85,9 @@ def main():
         if int(s.stats['hp']) > 0 and _IGNORED_IDS.count(s.base_id) == 0:
             valid_soldiers.append(s)
             index_list.append(s.base_id)
-    # print(index_list)
+    
     index_list.sort()
+    valid_soldiers = scale_enemies(valid_soldiers)
     random.shuffle(valid_soldiers)
     print(f'Enemies Shuffled!\n')
 
