@@ -37,19 +37,23 @@ def get_id(enemy):
 def wait():
     m.getch()
 
-def scale_enemies(valid_soldiers):
-    initial_soldiers = valid_soldiers.copy()
-    random.shuffle(valid_soldiers)
+def scale_enemy(soldier, valid_soldiers, scale_enemy_id):
     stat_names = ['hp', 'enemy_level', 'attack', 'defence', 'dodge', 'accuracy', 'mp', 'sp_attack']
     invested_vagabonds = ['17203', '17989', '17205', '17204', '15701']
-    for i in range(len(valid_soldiers)):
-        if invested_vagabonds.count(valid_soldiers[i].base_id) != 0:
-            continue
-        scaling_stats = initial_soldiers[i].stats
-        for stat in stat_names:
-            valid_soldiers[i].stats[stat] = scaling_stats[stat]
-    print('Scaled Enemies')
-    return valid_soldiers
+    if soldier.base_id == scale_enemy_id:
+        return soldier.stats
+    if invested_vagabonds.count(soldier.base_id) != 0 or invested_vagabonds.count(scale_enemy_id) != 0:
+        return soldier.stats
+    
+    original_stats = {}
+    for s in valid_soldiers:
+        if s.base_id == scale_enemy_id:
+            original_stats = s.stats
+            break
+
+    for stat in stat_names:
+        soldier.stats[stat] = original_stats[stat]
+    return soldier.stats
 
 
 def main():
@@ -92,18 +96,18 @@ def main():
             index_list.append(s.base_id)
 
     index_list.sort()
-    valid_soldiers = scale_enemies(valid_soldiers)
+    random.shuffle(valid_soldiers)
     print(f'Enemies Shuffled!\n')
 
     print("Generating Statblocks!")
     enemy_blocks = {}
-    old_progress = 0
     for i in range(len(index_list)):
+        enemy = valid_soldiers[i]
         enemy_block = f'  \"{index_list[i]}\": {"{"}\n'
-        soldiers[soldiers.index(valid_soldiers[i])].base_id = index_list[i]
-        enemy_block += f'    \"{valid_soldiers[i].name}\": {"{"}\n      '
-        for stat in valid_soldiers[i].stats:
-            value = valid_soldiers[i].stats[stat]
+        enemy.stats = scale_enemy(enemy, valid_soldiers, index_list[i])
+        enemy_block += f'    \"{enemy.name}\": {"{"}\n      '
+        for stat in enemy.stats:
+            value = enemy.stats[stat]
             if value == "reARMP_rowIndex":
                 continue
             if stat == "reARMP_rowIndex":
@@ -115,8 +119,12 @@ def main():
                 enemy_block += f'\"{stat}\": \"{value}\",\n      '
             else:
                 enemy_block += f'\"{stat}\": {value},\n      '
-        enemy_blocks[valid_soldiers[i].name] = enemy_block
+        enemy_blocks[enemy.name] = enemy_block
     print("Statblocks Generated!\n")
+
+    for i in range(len(index_list)):
+        soldier = valid_soldiers[i]
+        soldiers[soldiers.index(soldier)].base_id = index_list[i]
     
     print("Generating shuffled JSON!")
     fr = open(str(sys.argv[1]), r'r', encoding="utf8")
@@ -127,8 +135,8 @@ def main():
         if "\"1\": {" in line:
             break
         fw.write(line)
-    soldiers.sort(key=get_id)
     current_id = 0
+    soldiers.sort(key=get_id)
     for s in soldiers:
         if s.base_id == "" or s.name == "" or s.stats == {}:
             continue
