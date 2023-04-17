@@ -24,10 +24,12 @@ Current list of unrandomized enemies (in-order):
 _IGNORED_IDS = ['15363', '17186', '15435', '15603', '15604', '15640']
 
 class Enemy:
-    def __init__(self, base_id, name, stats):
+    def __init__(self, base_id, scale_id, name, stats, scaled_stats):
         self.base_id = base_id
+        self.scale_id = scale_id
         self.name = name
         self.stats = stats
+        self.scaled_stats = scaled_stats
 
 def get_id(enemy):
     if enemy.base_id == '':
@@ -38,22 +40,24 @@ def wait():
     m.getch()
 
 def scale_enemy(soldier, valid_soldiers, scale_enemy_id):
-    stat_names = ['hp', 'enemy_level', 'attack', 'defence', 'dodge', 'accuracy', 'mp', 'sp_attack']
+    stat_names = ['npc_list', 'encounter_kind', 'hp', 'enemy_level', 'exp_point', 'money_point', 'money_drop_ratio', 'job_exp_point', 'attack', 'defence', 'dodge', 'accuracy', 'mp', 'sp_attack', 'base_wait']
     invested_vagabonds = ['17203', '17989', '17205', '17204', '15701']
-    if soldier.base_id == scale_enemy_id:
-        return soldier.stats
+    soldier.scale_id = scale_enemy_id
+    soldier.scaled_stats = soldier.stats.copy()
     if invested_vagabonds.count(soldier.base_id) != 0 or invested_vagabonds.count(scale_enemy_id) != 0:
-        return soldier.stats
+        return soldier
     
     original_stats = {}
     for s in valid_soldiers:
         if s.base_id == scale_enemy_id:
+            for stat in stat_names:
+                print(f'{s.name}\'s {stat}: {s.stats[stat]}')
             original_stats = s.stats
             break
 
     for stat in stat_names:
-        soldier.stats[stat] = original_stats[stat]
-    return soldier.stats
+        soldier.scaled_stats[stat] = original_stats[stat]
+    return soldier
 
 
 def main():
@@ -61,12 +65,12 @@ def main():
     # there are 18027 npc's
     soldiers = []
     index_list = []
-    current_enemy = Enemy("", "", {})
+    current_enemy = Enemy("", "", "", {}, {})
     old_progress = 0
     for prefix, event, value in parser:
         if event == 'end_map' and value == None:
             soldiers.append(current_enemy)
-            current_enemy = Enemy("", "", {})
+            current_enemy = Enemy("", "", "", {}, {})
             
         if re.match(r'^[0-9]+$', prefix) and event == 'map_key':
             new_progress = int(re.search(r'\d+', prefix).group())/_ENEMYCOUNT
@@ -104,10 +108,10 @@ def main():
     for i in range(len(index_list)):
         enemy = valid_soldiers[i]
         enemy_block = f'  \"{index_list[i]}\": {"{"}\n'
-        enemy.stats = scale_enemy(enemy, valid_soldiers, index_list[i])
+        enemy = scale_enemy(enemy, valid_soldiers, index_list[i])
         enemy_block += f'    \"{enemy.name}\": {"{"}\n      '
-        for stat in enemy.stats:
-            value = enemy.stats[stat]
+        for stat in enemy.scaled_stats:
+            value = enemy.scaled_stats[stat]
             if value == "reARMP_rowIndex":
                 continue
             if stat == "reARMP_rowIndex":
@@ -122,20 +126,19 @@ def main():
         enemy_blocks[enemy.name] = enemy_block
     print("Statblocks Generated!\n")
 
-    for i in range(len(index_list)):
-        soldier = valid_soldiers[i]
-        soldiers[soldiers.index(soldier)].base_id = index_list[i]
+    for soldier in valid_soldiers:
+        soldiers[soldiers.index(soldier)].base_id = soldier.scale_id
     
     print("Generating shuffled JSON!")
-    fr = open(str(sys.argv[1]), r'r', encoding="utf8")
-    fw = open(r'character_npc_soldier_personal_data.json', r'w', encoding="utf8")
+    file_read = open(str(sys.argv[1]), r'r', encoding="utf8")
+    file_write = open(r'character_npc_soldier_personal_data.json', r'w', encoding="utf8")
     line = ""
     while True:
-        line = fr.readline()
+        line = file_read.readline()
         if "\"1\": {" in line:
             break
-        fw.write(line)
-    current_id = 0
+        file_write.write(line)
+    file_read.close()
     soldiers.sort(key=get_id)
     for s in soldiers:
         if s.base_id == "" or s.name == "" or s.stats == {}:
@@ -153,12 +156,12 @@ def main():
                     enemy_block += f'\"{stat}\": \"{value}\",\n      '
                 else:
                     enemy_block += f'\"{stat}\": {value},\n      '
-            fw.write(enemy_block)
+            file_write.write(enemy_block)
         else:
-            fw.write(enemy_blocks[s.name])
-        current_id += 1
-    fw.write("}")
-    fw.close()
+            file_write.write(enemy_blocks[s.name])
+
+    file_write.write("}")
+    file_write.close()
     print("Shuffled JSON File Created!\n")
 
     print("Randomized! Press any key to close this window.")
