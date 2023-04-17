@@ -20,8 +20,9 @@ Current list of unrandomized enemies (in-order):
     4. Normal Majima
     5. Normal Saejima
     6. Normal Kiryu
+    7 + 8. Right and Left Arm Enemies of the cleaning bot
 """
-_IGNORED_IDS = ['15363', '17186', '15435', '15603', '15604', '15640']
+_IGNORED_IDS = ['15363', '17186', '15435', '15603', '15604', '15640', '15668', '15483']
 
 class Enemy:
     def __init__(self, base_id, scale_id, name, stats, scaled_stats):
