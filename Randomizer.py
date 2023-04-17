@@ -40,7 +40,7 @@ def wait():
     m.getch()
 
 def scale_enemy(soldier, valid_soldiers, scale_enemy_id):
-    stat_names = ['npc_list', 'encounter_kind', 'hp', 'enemy_level', 'exp_point', 'money_point', 'money_drop_ratio', 'job_exp_point', 'attack', 'defence', 'dodge', 'accuracy', 'mp', 'sp_attack', 'base_wait']
+    stat_names = ['mission', 'group', 'npc_list', 'encounter_kind', 'hp', 'enemy_level', 'exp_point', 'money_point', 'money_drop_ratio', 'job_exp_point', 'attack', 'defence', 'dodge', 'accuracy', 'mp', 'sp_attack', 'base_wait']
     invested_vagabonds = ['17203', '17989', '17205', '17204', '15701']
     soldier.scale_id = scale_enemy_id
     soldier.scaled_stats = soldier.stats.copy()
@@ -50,8 +50,6 @@ def scale_enemy(soldier, valid_soldiers, scale_enemy_id):
     original_stats = {}
     for s in valid_soldiers:
         if s.base_id == scale_enemy_id:
-            for stat in stat_names:
-                print(f'{s.name}\'s {stat}: {s.stats[stat]}')
             original_stats = s.stats
             break
 
