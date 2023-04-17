@@ -4,6 +4,7 @@ import re
 import random
 import sys
 import msvcrt as m
+import reARMP as rearmp
 
 __author__ = "Zennith Boerger"
 __version__ = "0.1.0"
@@ -60,7 +61,9 @@ def scale_enemy(soldier, valid_soldiers, scale_enemy_id):
 
 
 def main():
-    parser = ijson.parse(open(str(sys.argv[1]), r'r', encoding="utf8"))
+    rearmp.file_path = sys.argv[1]
+    # rearmp.exportFile()
+    parser = ijson.parse(open(str(rearmp.file_path + '.json'), r'r', encoding="utf8"))
     # there are 18027 npc's
     soldiers = []
     index_list = []
@@ -129,7 +132,7 @@ def main():
         soldiers[soldiers.index(soldier)].base_id = soldier.scale_id
     
     print("Generating shuffled JSON!")
-    file_read = open(str(sys.argv[1]), r'r', encoding="utf8")
+    file_read = open(str(rearmp.file_path + '.json'), r'r', encoding="utf8")
     file_write = open(r'character_npc_soldier_personal_data.json', r'w', encoding="utf8")
     line = ""
     while True:
@@ -162,6 +165,11 @@ def main():
     file_write.write("}")
     file_write.close()
     print("Shuffled JSON File Created!\n")
+
+    print("Regenerating Bin File")
+    rearmp.file_path = 'character_npc_soldier_personal_data.json'
+    rearmp.rebuildFile()
+    print(".bin File Generated\n")
 
     print("Randomized! Press any key to close this window.")
     wait()
