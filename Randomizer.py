@@ -5,6 +5,7 @@ import random
 import sys
 import msvcrt as m
 import reARMP as rearmp
+import os
 
 __author__ = "Zennith Boerger"
 __version__ = "0.1.0"
@@ -69,6 +70,7 @@ def main():
     index_list = []
     current_enemy = Enemy("", "", "", {}, {})
     old_progress = 0
+    print(f'Processing Enemies: 0%')
     for prefix, event, value in parser:
         if event == 'end_map' and value == None:
             soldiers.append(current_enemy)
