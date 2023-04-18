@@ -1,7 +1,7 @@
 # Yakuza: Like a Dragon Enemy Randomizer
 A modification for Yakuza: Like A Dragon (A.K.A Yakuza 7) that randomizes enemies and scales them accordingly throughout the game.
 
-# A Warning on Balance:
+# A Warning on Stability:
 This version (0.1.0) is still quite buggy and not every enemy has been tested to see where they break the game.
 If your game crashes, softlocks, etc. when trying to fight a specific enemy, then my best suggestion would be to 1st regenerate
 your enemies, then let me know on either the Yakuza Modding Discord Mod-Feedback or leave a reply on the mod page
