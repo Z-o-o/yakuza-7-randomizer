@@ -4,7 +4,6 @@ import re
 import random
 import sys
 import msvcrt as m
-import reARMP as rearmp
 import os
 
 __author__ = "Zennith Boerger"
@@ -62,9 +61,9 @@ def scale_enemy(soldier, valid_soldiers, scale_enemy_id):
 
 
 def main():
-    rearmp.file_path = sys.argv[1]
-    # rearmp.exportFile()
-    parser = ijson.parse(open(str(rearmp.file_path + '.json'), r'r', encoding="utf8"))
+    current_directory = os.getcwd()
+    os.chdir(sys._MEIPASS)
+    parser = ijson.parse(open(r'character_npc_soldier_personal_data.bin.json', r'r', encoding="utf8"))
     # there are 18027 npc's
     soldiers = []
     index_list = []
@@ -134,7 +133,7 @@ def main():
         soldiers[soldiers.index(soldier)].base_id = soldier.scale_id
     
     print("Generating shuffled JSON!")
-    file_read = open(str(rearmp.file_path + '.json'), r'r', encoding="utf8")
+    file_read = open(r'character_npc_soldier_personal_data.bin.json', r'r', encoding="utf8")
     file_write = open(r'character_npc_soldier_personal_data.json', r'w', encoding="utf8")
     line = ""
     while True:
@@ -168,10 +167,10 @@ def main():
     file_write.close()
     print("Shuffled JSON File Created!\n")
 
-    print("Regenerating Bin File")
-    rearmp.file_path = 'character_npc_soldier_personal_data.json'
-    rearmp.rebuildFile()
-    print(".bin File Generated\n")
+    print("Generating Randomized Bin File")
+    import reARMP
+    print(".bin File Generated. Put this into your db.yazawa.en.par.unpack!\n")
+    os.rename(os.path.join(sys._MEIPASS, r"character_npc_soldier_personal_data.bin"), os.path.join(current_directory, r"character_npc_soldier_personal_data.bin"))
 
     print("Randomized! Press any key to close this window.")
     wait()

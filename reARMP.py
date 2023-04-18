@@ -823,7 +823,7 @@ def rebuildFile ():
         importTable (data)
 
 
-        with open(file_path +'.bin', 'wb') as file:
+        with open(file_path[:-5] +'.bin', 'wb') as file:
             file.write(rebuildFileTemp)
 
 
@@ -1455,23 +1455,7 @@ def importTable (data):
         rebuildFileTemp = writeToPosition(rebuildFileTemp, pointerToMainTable + 0x3C, 0x4, int(pointer).to_bytes(4, 'little') ) #Add pointer to the main table
 
 
-
-def showBanner():
-    print(r'''
-                       _____   __  __  _____  
-                /\    |  __ \ |  \/  ||  __ \ 
-  _ __  ___    /  \   | |__) || \  / || |__) |
- | '__|/ _ \  / /\ \  |  _  / | |\/| ||  ___/ 
- | |  |  __/ / ____ \ | | \ \ | |  | || |     
- |_|   \___|/_/    \_\|_|  \_\|_|  |_||_|     ''' + reARMP_version + '\n\n')
-
-showBanner()
-if (len(sys.argv) <= 1):
-    print ("Usage: reARMP <file>")
-    print ("You can also drag & drop!\n")
-    input("Press ENTER to exit... ")
-    sys.exit
-file_path = sys.argv[1:][0]
+file_path = 'character_npc_soldier_personal_data.json'
 file_path = file_path.split("\\")[-1]
 file_extension = file_path.split(".")[-1]
 
