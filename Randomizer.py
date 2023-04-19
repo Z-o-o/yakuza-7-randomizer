@@ -13,17 +13,15 @@ __license__ = "MIT"
 # Total enemy count including invalid/test enemies
 _ENEMYCOUNT = 18028
 # IDs to ignore so that no shenanigans happen like Mr Masochist replacing a boss
-"""
-Current list of unrandomized enemies (in-order):
-    1. Mr. Masochist
-    2. Masato Arakawa
-    3. Ishioda Wrecking Ball
-    4. Normal Majima
-    5. Normal Saejima
-    6. Normal Kiryu
-    7 + 8. Right and Left Arm Enemies of the cleaning bot
-"""
-_IGNORED_IDS = ['15363', '17186', '15435', '15603', '15604', '15640', '15668', '15483']
+_IGNORED_IDS = ['15363', # Mr. Masochist 
+                '17186', # Masato Arakawa
+                '15435', # Ishioda Wrecking Ball
+                '15603', # Normal Majima
+                '15604', # Normal Saejima
+                '15640', # Normal Kiryu
+                '15668', '17621', '17829', # Right Arm of Cleaning Robots
+                '15483', '17622', '17830', # Left Arm of Cleaning Robots 
+                '17828', '15216', '15648' ] # Cleaning Robots
 
 # Enemy class for storing enemies throughout the file
 class Enemy:
@@ -51,14 +49,17 @@ def scale_enemy(soldier, valid_soldiers, scale_enemy_id):
     invested_vagabonds = ['17203', '17989', '17205', '17204', '15701']
     soldier.scale_id = scale_enemy_id
     soldier.scaled_stats = soldier.stats.copy()
-    if invested_vagabonds.count(soldier.base_id) != 0 or invested_vagabonds.count(scale_enemy_id) != 0:
-        return soldier
     
     original_stats = {}
     for s in valid_soldiers:
         if s.base_id == scale_enemy_id:
             original_stats = s.stats
             break
+
+    if invested_vagabonds.count(soldier.base_id) != 0 or invested_vagabonds.count(scale_enemy_id) != 0:
+        soldier.scaled_stats['attack'] = original_stats['attack']
+        soldier.scaled_stats['sp_attack'] = original_stats['sp_attack']
+        return soldier
 
     for stat in stat_names:
         soldier.scaled_stats[stat] = original_stats[stat]
