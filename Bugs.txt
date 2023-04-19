@@ -4,4 +4,4 @@
 4. 1st Ishioda wrecking ball fight crashes game unless the crane is not randomized
 5. The majima saejima fight can't be randomized
 6. Kiryu fight cannot be randomized
-7. Left and Right arm of the Cleaning Robot can't be randomized
+7. Left and Right arm of the Cleaning Robot can't be randomized (and assumedly neither can the robot itself)
