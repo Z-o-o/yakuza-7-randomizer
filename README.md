@@ -8,7 +8,7 @@ the Yakuza Modding Discord Mod-Feedback or leave a reply on the mod page detaili
 inlcude your modified character_npc_soldier_personal_data.bin file. After sending me feedback 1st regenerate your enemies as this should
 randomize the enemy that was causing issues away (hopefully for the rest of your playthrough).
 
-# How to use:
+# How to use (RMM):
  ## Step 1:
   
   Download the Randomizer.exe file. This will generate an RMM compatible mod folder with the randomized enemy file.
@@ -20,3 +20,22 @@ randomize the enemy that was causing issues away (hopefully for the rest of your
  ## Step 3:
   You have now successfully randomized your enemies in Yakuza: Like A Dragon. Nothing else is required and enjoy! If you'd like to randomize your
   enemies again its just as simple as rerunning and Randomizer.exe file and replacing the one in your mods folder with the new one.
+
+# How to use (Manual Installation):
+ ## Step 1:
+  
+  Download the Randomizer.exe file. This will generate an RMM compatible mod folder with the randomized enemy file.
+  
+ ## Step 2:
+  
+  Simply run Randomizer.exe, and once it is completed you will need to put the generated character_npc_soldier_personal_data.bin file
+  into the unpacked db.yazawa.en.par folder and then repack again. 
+  
+## Step 3:
+  Once completed put this newly packaged db.yazawa.en.par into your YLAD files, replacing the already
+  existing db.yazawa.en.par
+ 
+ ## Step 4:
+  You have now successfully randomized your enemies in Yakuza: Like A Dragon. Nothing else is required and enjoy! If you'd like to randomize your
+  enemies again its just as simple as rerunning and Randomizer.exe file and following the same process of repacking your par folder and replacing
+  your db.yazawa.en.par in your YLAD files.
