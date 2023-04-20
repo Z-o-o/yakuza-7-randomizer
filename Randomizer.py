@@ -7,7 +7,7 @@ import msvcrt as m
 import os
 
 __author__ = "Zennith Boerger"
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __license__ = "MIT"
 
 # Total enemy count including invalid/test enemies
