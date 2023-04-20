@@ -5,6 +5,7 @@ import random
 import sys
 import msvcrt as m
 import os
+import shutil
 
 __author__ = "Zennith Boerger"
 __version__ = "0.1.1"
@@ -206,11 +207,17 @@ def main():
     # This is just using out current_directory we stored at the way beginning of the program's execution to store our newly
     # packaged .bin file into an RMM compatible package. Nothing too crazy here
     print("Generating RMM Compatible Directory...")
-    directories = ['Randomizer/', 'db.yazawa.en/', 'en/']
-    for directory in directories:
-        current_directory = os.path.join(current_directory, directory)
-        os.makedirs(current_directory)
-    os.rename(os.path.join(sys._MEIPASS, r"character_npc_soldier_personal_data.bin"), os.path.join(current_directory, r"character_npc_soldier_personal_data.bin"))
+    current_directory = os.path.join(current_directory, 'Randomizer/')
+    os.makedirs(current_directory)
+    languages = [r'de', r'en', r'es', r'fr', r'it', r'ja', r'ko', r'pt', r'ru', r'zh', r'zhs']
+    for language in languages:
+        rmm_directory = current_directory
+        directories = [f'db.yazawa.{language}/', f'{language}/']
+        for directory in directories:
+            rmm_directory = os.path.join(rmm_directory, directory)
+            os.makedirs(rmm_directory)
+        shutil.copy(os.path.join(sys._MEIPASS, r"character_npc_soldier_personal_data.bin"), os.path.join(rmm_directory, r"character_npc_soldier_personal_data.bin"))
+
     print("RMM Compatible Directory Generated!\n")
 
     print("Randomized! Press any key to close this window.")
