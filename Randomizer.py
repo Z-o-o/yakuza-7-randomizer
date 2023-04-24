@@ -8,7 +8,7 @@ import os
 import shutil
 
 __author__ = "Zennith Boerger"
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __license__ = "MIT"
 
 # Total enemy count including invalid/test enemies
