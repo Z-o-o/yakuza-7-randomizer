@@ -5,3 +5,5 @@
 5. The majima saejima fight can't be randomized
 6. Kiryu fight cannot be randomized
 7. Left and Right arm of the Cleaning Robot can't be randomized (and assumedly neither can the robot itself)
+
+8. Check out yazawa_dgn_c02_k013_btl030 in the Interesting Generations\2ndfightbeforeSawashiroOnRooftopcrash.bin to find out which enemy crashed the game
