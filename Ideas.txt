@@ -1,0 +1,6 @@
+1. GUI
+2. Job Randomizing
+3. Item Drop randomizing
+4. Model Randomizing
+5. Improve Scaling (Heals, Summons)
+6. Music Randomizing
