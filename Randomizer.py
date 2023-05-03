@@ -26,6 +26,8 @@ _IGNORED_IDS = ['15363', # Mr. Masochist
                 '17990' # True Final Millenium Tower Amon
                 ]
 
+# scale_vagabonds = True
+
 # Enemy class for storing enemies throughout the file
 class Enemy:
     def __init__(self, base_id, scale_id, name, stats, scaled_stats):
@@ -62,6 +64,11 @@ def scale_enemy(soldier, valid_soldiers, scale_enemy_id):
     if invested_vagabonds.count(soldier.base_id) != 0 or invested_vagabonds.count(scale_enemy_id) != 0:
         soldier.scaled_stats['attack'] = original_stats['attack']
         soldier.scaled_stats['sp_attack'] = original_stats['sp_attack']
+        #if scale_vagabonds:
+        #    soldier.scaled_stats['enemy_level'] = original_stats['enemy_level']
+        #    soldier.scaled_stats['exp_point'] = original_stats['exp_point'] * 10
+        #    soldier.scaled_stats['job_exp_point'] = soldier.scaled_stats['exp_point'] * 0.9
+        #    soldier.scaled_stats['money_point'] = soldier.scaled_stats['exp_point'] / random.randint(20, 140)
         return soldier
 
     for stat in stat_names:

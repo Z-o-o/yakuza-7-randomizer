@@ -1,9 +1,1 @@
-1. At the end of the Yokohama Sewer Dungeon, the cleaning robot will be broken and unable to be fought
-2. Any enemy/enemy whose model can't be retrieved is replaced by dummy guy, and sometimes a plain all black clothing guy
-3. Masato Arakawa's QTE softlocks the game
-4. 1st Ishioda wrecking ball fight crashes game unless the crane is not randomized
-5. The majima saejima fight can't be randomized
-6. Kiryu fight cannot be randomized
-7. Left and Right arm of the Cleaning Robot can't be randomized (and assumedly neither can the robot itself)
-
-8. Check out yazawa_dgn_c02_k013_btl030 in the Interesting Generations\2ndfightbeforeSawashiroOnRooftopcrash.bin to find out which enemy crashed the game
+1. Any enemy/enemy whose model can't be retrieved is replaced by dummy guy, and sometimes a plain all black clothing guy
