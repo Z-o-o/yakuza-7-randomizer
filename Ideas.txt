@@ -4,5 +4,6 @@
 4. Model Randomizing
 5. Improve Scaling (Heals, Summons)
 6. Music Randomizing
+7. Add Seed display + input
 
-7. Utilize Dummy_all and/or Dummy_Dungeon to do a 7 party member mod?
+8. Utilize Dummy_all and/or Dummy_Dungeon to do a 7 party member mod?
