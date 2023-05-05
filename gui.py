@@ -5,43 +5,17 @@ from tkinter import *
 from tkinter import Button, Tk, HORIZONTAL
 from tkinter.ttk import Progressbar
 from tkinter import messagebox
+from tktooltip import ToolTip
 
 __author__ = "Zennith Boerger"
 __version__ = "0.1.2"
 __license__ = "MIT"
 
-def percentageCalculator(x, y, case=1):
-    """Calculate percentages
-       Case1: What is x% of y?
-       Case2: x is what percent of y?
-       Case3: What is the percentage increase/decrease from x to y?
-    """
-    if case == 1:
-        #Case1: What is x% of y?
-        r = x/100*y
-        return r
-    elif case == 2:
-        #Case2: x is what percent of y?
-        r = x/y*100
-        return r
-    elif case == 3:
-        #Case3: What is the percentage increase/decrease from x to y?
-        r = (y-x)/x*100
-        return r
-    else:
-        raise Exception("Only case 1,2 and 3 are available!")
+scale_vagabonds_value = 1
 
-
-def makeChecks(root, fields):
-    entries = []
-    for field in fields:
-        row = Frame(root)
-        ent = Checkbutton(root, text=field, variable=scale_vagabonds, onvalue=1, offvalue=0, command=(lambda s=scale_vagabonds: print('Scale Vagabonds?: ' + str(s.get()))))
-        row.pack(side=TOP, fill=X, padx=5, pady=5)
-        ent.pack(side=TOP, fill=X)
-        entries.append((field, ent))
-    return entries
-
+def percentageCalculator(x, y):
+    r = x/y*100
+    return r
 
 def processEntry(entries):
     infoDict = {}
@@ -53,7 +27,7 @@ def processEntry(entries):
     return infoDict
     
     
-def randomize(progress, status, responses):
+def randomize(progress, status):
 
     steps = ['Processing Enemies', 
              'Shuffling Enemies', 
@@ -63,48 +37,84 @@ def randomize(progress, status, responses):
              'Generating RMM Compatible Directory']
 
     try:
-        p = 0
-        for i in steps:
-            p += 1
-            # Case2: x is what percent of y?
-            unit = percentageCalculator(p, len(steps), case=2)
+        import Randomizer as ra
+        ra.set_scale_vagabonds(scale_vagabonds_value)
+        step = "{}...".format(steps[0])
+        unit = percentageCalculator(0, len(steps))
+        progress['value'] = unit
+        percent['text'] = "{}%".format(int(unit))
+        status['text'] = "{}".format(step)
+        current_directory, parser = ra.open_data_file()
 
+        soldiers, index_list = ra.parse_enemies(parser)
 
-            step = "{}...".format(i)
-            progress['value'] = unit
-            percent['text'] = "{}%".format(int(unit))
-            status['text'] = "{}".format(step)
+        valid_soldiers = ra.filter_soldiers(soldiers, index_list)
+        step = "{}...".format(steps[1])
+        unit = percentageCalculator(1, len(steps))
+        progress['value'] = unit
+        percent['text'] = "{}%".format(int(unit))
+        status['text'] = "{}".format(step)
 
-            root.update()
+        valid_soldiers = ra.shuffle_enemies(index_list, valid_soldiers).copy()
+        step = "{}...".format(steps[2])
+        unit = percentageCalculator(2, len(steps))
+        progress['value'] = unit
+        percent['text'] = "{}%".format(int(unit))
+        status['text'] = "{}".format(step)
 
+        enemy_blocks = ra.generate_statblock(index_list, valid_soldiers)
+        step = "{}...".format(steps[3])
+        unit = percentageCalculator(2, len(steps))
+        progress['value'] = unit
+        percent['text'] = "{}%".format(int(unit))
+        status['text'] = "{}".format(step)
+
+        soldiers = ra.reassign_ids(soldiers, valid_soldiers).copy()
+
+        step = "{}...".format(steps[4])
+        unit = percentageCalculator(4, len(steps))
+        progress['value'] = unit
+        percent['text'] = "{}%".format(int(unit))
+        status['text'] = "{}".format(step)
+        ra.generate_json(soldiers, enemy_blocks)
+
+        ra.repackage()
+        step = "{}...".format(steps[5])
+        unit = percentageCalculator(5, len(steps))
+        progress['value'] = unit
+        percent['text'] = "{}%".format(int(unit))
+        status['text'] = "{}".format(step)
+
+        ra.generate_RMM_directory(current_directory)
+        unit = percentageCalculator(6, len(steps))
+        progress['value'] = unit
+        percent['text'] = "{}%".format(int(unit))
+        status['text'] = "{}".format(step)
+
+        root.update()
         messagebox.showinfo('Success!', "Randomized!")
         sys.exit()
-
-
     except Exception as e:
         messagebox.showinfo('Error!', "ERROR: {}".format(e) + "\nLet the Mod Creator know in the YMC or on the Mod Page.")
-        sys.exit()
 
-    log.close()
-
-
-
-
-
+def set_value(field, value):
+    field = value
+    # wow what a complex method
 
 root = Tk()
 root.title("Randomizer v" + __version__)
 root.geometry("600x320")
 
-root.iconbitmap(os.path.join(os.getcwd(), 'logo.ico'))
+# root.iconbitmap('logo.ico')
 
-fields = 'Randomize Vagabonds?',
-
+row = Frame(root)
 scale_vagabonds = IntVar(master=root, value=1)
+ent = Checkbutton(root, text='Scale Vagabonds', variable=scale_vagabonds, onvalue=1, offvalue=0, command=(lambda s=scale_vagabonds: set_value(scale_vagabonds_value, s.get())))
+row.pack(side=TOP, fill=X, padx=5, pady=5)
+ent.pack(side=TOP, fill=X)
+ToolTip(ent, msg="Scale Vagabonds to what level they spawn (no level 80 vagabonds giving you 30 levels at level 12).")
 
-ents = makeChecks(root, fields)
-
-runButton = Button(root, text='Randomize!', command=(lambda responses=ents: randomize(progress, status, responses)))
+runButton = Button(root, text='Randomize!', command=(lambda : randomize(progress, status)))
 percent = Label(root, text="", anchor=S) 
 progress = Progressbar(root, length=500, mode='determinate')    
 status = Label(root, text="", relief=SUNKEN, anchor=W, bd=2)

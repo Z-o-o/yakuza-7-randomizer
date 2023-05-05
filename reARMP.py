@@ -10,7 +10,9 @@ from collections import OrderedDict
 reARMP_version = "v0.11.2"
 hexFile = b''
 rebuildFileTemp = bytearray()
-
+file_path = 'character_npc_soldier_personal_data.json'
+file_path = file_path.split("\\")[-1]
+file_extension = file_path.split(".")[-1]
 
 
 def readFromPosition (offset, size, value_type):
@@ -899,7 +901,6 @@ def initializeRebuildFile (ver, revision):
 
 def importTable (data):
     jsonInfo = storeJSONInfo(data)
-    print ("Rebuilding...")
     global rebuildFileTemp
 
     pointerToMainTable = len(rebuildFileTemp)
@@ -1453,19 +1454,3 @@ def importTable (data):
         pointer = int(len(rebuildFileTemp))
         importTable (data['subTable'])
         rebuildFileTemp = writeToPosition(rebuildFileTemp, pointerToMainTable + 0x3C, 0x4, int(pointer).to_bytes(4, 'little') ) #Add pointer to the main table
-
-
-file_path = 'character_npc_soldier_personal_data.json'
-file_path = file_path.split("\\")[-1]
-file_extension = file_path.split(".")[-1]
-
-
-def determineFileExtension(file_extension): #Switch case based on the file extension
-    switch = {
-        "bin" : exportFile,
-        "json" : rebuildFile
-    }
-    func = switch.get(file_extension.lower(), lambda: "Extension not supported")
-    return func()
-
-determineFileExtension(file_extension)

@@ -8,10 +8,10 @@ import os
 import shutil
 
 __author__ = "Zennith Boerger"
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __license__ = "MIT"
 
-# Total enemy count including invalid/test enemies
+# Total enemy count including invalid/test enemies (not currently utilized)
 _ENEMYCOUNT = 18028
 # IDs to ignore so that no shenanigans happen like Mr Masochist replacing a boss
 _IGNORED_IDS = ['15363', # Mr. Masochist 
@@ -43,12 +43,8 @@ def get_id(enemy):
         return -1
     return int(enemy.base_id)
 
-# wait function to stop the program until keypress
-def wait():
-    m.getch()
-
-def set_scale_vagabonds(self, scale_vagabonds):
-    self.scale_vagabonds = scale_vagabonds
+def set_scale_vagabonds(new_value):
+    scale_vagabonds = new_value
 
 # This function utilizes a naive method of scaling enemies by simply
 # copying the stats from the original enemy to the enemy replacing it.
@@ -64,7 +60,9 @@ def scale_enemy(soldier, valid_soldiers, scale_enemy_id):
             original_stats = s.stats
             break
 
-    if invested_vagabonds.count(soldier.base_id) != 0 or invested_vagabonds.count(scale_enemy_id) != 0:
+    vagabond_scaled = (invested_vagabonds.count(soldier.base_id)) != 0
+    enemy_scaled = (invested_vagabonds.count(scale_enemy_id)) != 0
+    if vagabond_scaled:
         soldier.scaled_stats['attack'] = original_stats['attack']
         soldier.scaled_stats['sp_attack'] = original_stats['sp_attack']
         if scale_vagabonds:
@@ -75,101 +73,31 @@ def scale_enemy(soldier, valid_soldiers, scale_enemy_id):
         return soldier
 
     for stat in stat_names:
+        if enemy_scaled and ['hp', 'exp_point', 'money_point', 'money_drop_ratio', 'job_exp_point'].count(stat) != 0:
+            continue
         soldier.scaled_stats[stat] = original_stats[stat]
     return soldier
 
+# This is just using out current_directory we stored at the way beginning of the program's execution to store our newly
+# packaged .bin file into an RMM compatible package. Nothing too crazy here
+def generate_RMM_directory(current_directory):
+    current_directory = os.path.join(current_directory, 'Randomizer/')
+    os.makedirs(current_directory)
+    languages = [r'de', r'en', r'es', r'fr', r'it', r'ja', r'ko', r'pt', r'ru', r'zh', r'zhs']
+    for language in languages:
+        rmm_directory = current_directory
+        directories = [f'db.yazawa.{language}/', f'{language}/']
+        for directory in directories:
+            rmm_directory = os.path.join(rmm_directory, directory)
+            os.makedirs(rmm_directory)
+        shutil.copy(os.path.join(sys._MEIPASS, r"character_npc_soldier_personal_data.bin"), os.path.join(rmm_directory, r"character_npc_soldier_personal_data.bin"))
 
-def main():
-    # We need to store our current location to generate the RMM folder structure where the .exe
-    # was run from, since the .exe uses the root's temp folder for processing.
-    current_directory = os.getcwd()
-    os.chdir(sys._MEIPASS)
-    parser = ijson.parse(open(r'character_npc_soldier_personal_data.bin.json', r'r', encoding="utf8"))
-    # We process the JSON file to retrieve the base_id, name, and stats of the current enemy, such as True 
-    # Final Millenium Tower Amon (base_id = '17790', name = 'yazawa_sfm_boss_amon', stats = Lots of stuff). 
-    # While doing so, we keep the user updated on progress to ensure everything is working correctly.
-    soldiers = []
-    index_list = []
-    current_enemy = Enemy("", "", "", {}, {})
-    old_progress = 0
-    print(f'Processing Enemies: 0.00%')
-    for prefix, event, value in parser:
-        if event == 'end_map' and value == None:
-            soldiers.append(current_enemy)
-            current_enemy = Enemy("", "", "", {}, {})
-            
-        if re.match(r'^[0-9]+$', prefix) and event == 'map_key':
-            new_progress = int(re.search(r'\d+', prefix).group())/_ENEMYCOUNT
-            if (new_progress - old_progress) >= 0.05:
-                print(f'Processing Enemies: {("%.2f" % (new_progress*100))}%')
-                old_progress = new_progress
-            current_enemy.name = value
-            current_enemy.base_id = re.search(r'\d+', prefix).group()
+def repackage():
+    import reARMP
+    reARMP.rebuildFile()
 
-        if current_enemy.name != "" and "." in prefix:
-            breakoff = 0
-            while (prefix[breakoff-1] != "."):
-                breakoff -= 1
-            key = prefix[breakoff:]
-            current_enemy.stats[key] = value
-
-    print(f'Processing Enemies: 100%')
-    print(f'Processing Enemies: Done!\n')
-
-    # Now we process soldiers to filter out all test/invalid enemies (enemies who have 0 hp in the files)
-    # We also keep track of what indexes are "valid" indexes for future processing as well
-    valid_soldiers = []
-    for s in soldiers:
-        # there are a lot of blank soldiers, either due to a processing error I make or just how ijson parses the file
-        # but either way we don't want them so we skip them
-        if s.base_id == "" or s.name == "" or s.stats == {}:
-            continue
-        # check to see if the enemy is test/invalid/ignored
-        if int(s.stats['hp']) > 0 and _IGNORED_IDS.count(s.base_id) == 0:
-            valid_soldiers.append(s)
-            index_list.append(s.base_id)
-
-    index_list.sort()
-    random.shuffle(valid_soldiers)
-    print(f'Enemies Shuffled!\n')
-
-    print("Generating Statblocks...")
-    # We generate the statblocks for each scaled enemy here. Although a lot of hard-coding is involved to match formatting, 
-    # it makes the file look good. The scale_id and scaled_stats parameters for the Enemy object are used here, and the code 
-    # is easily readable despite containing many if and for statements. Look for the function explanation of scale_enemy for 
-    # more information.
-    enemy_blocks = {}
-    for i in range(len(index_list)):
-        enemy = valid_soldiers[i]
-        enemy_block = f'  \"{index_list[i]}\": {"{"}\n'
-        enemy = scale_enemy(enemy, valid_soldiers, index_list[i])
-        enemy_block += f'    \"{enemy.name}\": {"{"}\n      '
-        for stat in enemy.scaled_stats:
-            value = enemy.scaled_stats[stat]
-            if value == "reARMP_rowIndex":
-                continue
-            if stat == "reARMP_rowIndex":
-                end_comma = ","
-                if index_list[i] == '18027':
-                    end_comma = ""
-                enemy_block += f'\"{stat}\": {value}\n    {"}"}\n  {"}"}{end_comma}\n'
-            elif stat == "reARMP_isValid":
-                enemy_block += f'\"{stat}\": \"{value}\",\n      '
-            else:
-                enemy_block += f'\"{stat}\": {value},\n      '
-        enemy_blocks[enemy.name] = enemy_block
-    print("Statblocks Generated!\n")
-
-    # We reassign enemy IDs here to ensure that they are placed into the file at the enemy that they replaced.
-    # Although it may be possible to bypass this by using scale_id when generating the new JSON file, it currently 
-    # works fine, so we don't need to fix it.
-    print("Reassigning enemy IDs...")
-    for soldier in valid_soldiers:
-        soldiers[soldiers.index(soldier)].base_id = soldier.scale_id
-    print("ID's Reassigned\n")
-    
-    # Here is where we generate a brand new JSON for our randomizes enemies
-    print("Generating shuffled JSON...")
+# Here is where we generate a brand new JSON for our randomizes enemies
+def generate_json(soldiers, enemy_blocks):
     file_read = open(r'character_npc_soldier_personal_data.bin.json', r'r', encoding="utf8")
     file_write = open(r'character_npc_soldier_personal_data.json', r'w', encoding="utf8")
     # Create and open our files
@@ -206,35 +134,89 @@ def main():
 
     file_write.write("}")
     file_write.close()
-    print("Shuffled JSON File Created!\n")
 
-    print("Generating Randomized Bin File...")
-    # Here, it appears that the Python files automatically run when imported, but this code does not execute 
-    # reARMP until after the randomized JSON is generated, so it works fine. However, IDEs may complain that 
-    # reARMP is not utilized. The source code has been edited for this project's purposes, but it could be 
-    # improved later to be more efficient.
-    import reARMP
-    print(".bin File Generated!\n")
+# We reassign enemy IDs here to ensure that they are placed into the file at the enemy that they replaced.
+# Although it may be possible to bypass this by using scale_id when generating the new JSON file, it currently 
+# works fine, so we don't need to fix it.
+def reassign_ids(soldiers, valid_soldiers):
+    for soldier in valid_soldiers:
+        soldiers[soldiers.index(soldier)].base_id = soldier.scale_id
+    return soldiers
 
-    # This is just using out current_directory we stored at the way beginning of the program's execution to store our newly
-    # packaged .bin file into an RMM compatible package. Nothing too crazy here
-    print("Generating RMM Compatible Directory...")
-    current_directory = os.path.join(current_directory, 'Randomizer/')
-    os.makedirs(current_directory)
-    languages = [r'de', r'en', r'es', r'fr', r'it', r'ja', r'ko', r'pt', r'ru', r'zh', r'zhs']
-    for language in languages:
-        rmm_directory = current_directory
-        directories = [f'db.yazawa.{language}/', f'{language}/']
-        for directory in directories:
-            rmm_directory = os.path.join(rmm_directory, directory)
-            os.makedirs(rmm_directory)
-        shutil.copy(os.path.join(sys._MEIPASS, r"character_npc_soldier_personal_data.bin"), os.path.join(rmm_directory, r"character_npc_soldier_personal_data.bin"))
+# We generate the statblocks for each scaled enemy here. Although a lot of hard-coding is involved to match formatting, 
+# it makes the file look good. The scale_id and scaled_stats parameters for the Enemy object are used here, and the code 
+# is easily readable despite containing many if and for statements. Look for the function explanation of scale_enemy for 
+# more information.
+def generate_statblock(index_list, valid_soldiers):
+    enemy_blocks = {}
+    for i in range(len(index_list)):
+        enemy = valid_soldiers[i]
+        enemy_block = f'  \"{index_list[i]}\": {"{"}\n'
+        enemy = scale_enemy(enemy, valid_soldiers, index_list[i])
+        enemy_block += f'    \"{enemy.name}\": {"{"}\n      '
+        for stat in enemy.scaled_stats:
+            value = enemy.scaled_stats[stat]
+            if value == "reARMP_rowIndex":
+                continue
+            if stat == "reARMP_rowIndex":
+                end_comma = ","
+                if index_list[i] == '18027':
+                    end_comma = ""
+                enemy_block += f'\"{stat}\": {value}\n    {"}"}\n  {"}"}{end_comma}\n'
+            elif stat == "reARMP_isValid":
+                enemy_block += f'\"{stat}\": \"{value}\",\n      '
+            else:
+                enemy_block += f'\"{stat}\": {value},\n      '
+        enemy_blocks[enemy.name] = enemy_block
+    return enemy_blocks
 
-    print("RMM Compatible Directory Generated!\n")
+def shuffle_enemies(index_list, valid_soldiers):
+    index_list.sort()
+    random.shuffle(valid_soldiers)
+    return valid_soldiers
 
-    print("Randomized! Press any key to close this window.")
-    wait()
+# Now we process soldiers to filter out all test/invalid enemies (enemies who have 0 hp in the files)
+# We also keep track of what indexes are "valid" indexes for future processing as well
+def filter_soldiers(soldiers, index_list):
+    valid_soldiers = []
+    for s in soldiers:
+        # there are a lot of blank soldiers, either due to a processing error I make or just how ijson parses the file
+        # but either way we don't want them so we skip them
+        if s.base_id == "" or s.name == "" or s.stats == {}:
+            continue
+        # check to see if the enemy is test/invalid/ignored
+        if int(s.stats['hp']) > 0 and _IGNORED_IDS.count(s.base_id) == 0:
+            valid_soldiers.append(s)
+            index_list.append(s.base_id)
+    return valid_soldiers
 
+# We process the JSON file to retrieve the base_id, name, and stats of the current enemy, such as True 
+# Final Millenium Tower Amon (base_id = '17790', name = 'yazawa_sfm_boss_amon', stats = Lots of stuff).
+def parse_enemies(parser):
+    soldiers = []
+    index_list = []
+    current_enemy = Enemy("", "", "", {}, {})
+    for prefix, event, value in parser:
+        if event == 'end_map' and value == None:
+            soldiers.append(current_enemy)
+            current_enemy = Enemy("", "", "", {}, {})
+            
+        if re.match(r'^[0-9]+$', prefix) and event == 'map_key':
+            current_enemy.name = value
+            current_enemy.base_id = re.search(r'\d+', prefix).group()
 
-if __name__ == "__main__":
-    main()
+        if current_enemy.name != "" and "." in prefix:
+            breakoff = 0
+            while (prefix[breakoff-1] != "."):
+                breakoff -= 1
+            key = prefix[breakoff:]
+            current_enemy.stats[key] = value
+    return soldiers,index_list
+
+# We need to store our current location to generate the RMM folder structure where the .exe
+# was run from, since the .exe uses the root's temp folder for processing.
+def open_data_file():
+    current_directory = os.getcwd()
+    os.chdir(sys._MEIPASS)
+    parser = ijson.parse(open(r'character_npc_soldier_personal_data.bin.json', r'r', encoding="utf8"))
+    return current_directory,parser
