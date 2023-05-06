@@ -20,9 +20,9 @@ _IGNORED_IDS = ['15363', # Mr. Masochist
                 '15603', # Normal Majima
                 '15604', # Normal Saejima
                 '15640', # Normal Kiryu
-                '15668', '17621', '17829', # Right Arm of Cleaning Robots
-                '15483', '17622', '17830', # Left Arm of Cleaning Robots 
-                '17828', '15216', '15648', # Cleaning Robots
+                '17621', '17829', # Right Arm of Cleaning Robots
+                '17622', '17830', # Left Arm of Cleaning Robots 
+                '17828', '15216', # Cleaning Robots
                 '17990' # True Final Millenium Tower Amon
                 ]
 
