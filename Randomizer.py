@@ -62,16 +62,36 @@ def scale_enemy(soldier, valid_soldiers, scale_enemy_id, scale_vagabonds):
         soldier.scaled_stats['sp_attack'] = original_stats['sp_attack']
         if scale_vagabonds:
             soldier.scaled_stats['enemy_level'] = original_stats['enemy_level']
-            soldier.scaled_stats['exp_point'] = int(original_stats['exp_point'] * 10)
+            soldier.scaled_stats['exp_point'] = int(original_stats['exp_point'] * random.randint(10, 30))
             soldier.scaled_stats['job_exp_point'] = int(soldier.scaled_stats['exp_point'] * 0.9)
             soldier.scaled_stats['money_point'] = int(soldier.scaled_stats['exp_point'] / random.randint(20, 140))
         return soldier
+    
+    if enemy_scaled:
+        if original_stats['enemy_level'] == 30:
+            soldier.scaled_stats = scale_enemy_vagabond(soldier, 200, 400, random.randint(180, 450), 500, 1000, 162).copy()
+        if original_stats['enemy_level'] == 34:
+            soldier.scaled_stats = scale_enemy_vagabond(soldier, 320, 1744, 400, 800, 1300, 360).copy()
+        if original_stats['enemy_level'] == 35:
+            soldier.scaled_stats = scale_enemy_vagabond(soldier, 389, 666, 400, 1100, 1500, 360).copy()
+        if original_stats['enemy_level'] == 50:
+            soldier.scaled_stats = scale_enemy_vagabond(soldier, 984, 984, 2574, 3000, 4800, 2317).copy()
+        if original_stats['enemy_level'] == 80:
+            soldier.scaled_stats = scale_enemy_vagabond(soldier, 1350, 1350, 12540, 8700, 10500, 11286).copy()
 
     for stat in stat_names:
         if enemy_scaled and ['hp', 'exp_point', 'money_point', 'money_drop_ratio', 'job_exp_point'].count(stat) != 0:
             continue
         soldier.scaled_stats[stat] = original_stats[stat]
     return soldier
+
+def scale_enemy_vagabond(soldier, hp_lower, hp_higher, exp, money_lower, money_higher, job_exp):
+    soldier.scaled_stats['hp'] = int(random.randint(hp_lower, hp_higher))
+    soldier.scaled_stats['exp_point'] = exp
+    soldier.scaled_stats['money_point'] = int(random.randint(money_lower, money_higher))
+    soldier.scaled_stats['money_drop_ratio'] = 1000
+    soldier.scaled_stats['job_exp_point'] = job_exp
+    return soldier.scaled_stats
 
 # This is just using out current_directory we stored at the way beginning of the program's execution to store our newly
 # packaged .bin file into an RMM compatible package. Nothing too crazy here
