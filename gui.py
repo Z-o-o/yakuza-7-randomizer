@@ -1,6 +1,8 @@
 import os
 import time
 import sys
+import re
+import random
 from tkinter import *
 from tkinter import Button, Tk, HORIZONTAL
 from tkinter.ttk import Progressbar
@@ -12,20 +14,15 @@ __version__ = "0.1.2"
 __license__ = "MIT"
 
 scale_vagabonds_value = 1
+seed_value = ''
+
+def set_value(field, value):
+    field = value
+    # wow what a complex method
 
 def percentageCalculator(x, y):
     r = x/y*100
     return r
-
-def processEntry(entries):
-    infoDict = {}
-    for entry in entries:       
-        field = entry[0]
-        text  = entry[1].get()
-        infoDict[field] = text
-        
-    return infoDict
-    
     
 def randomize(progress, status):
 
@@ -38,68 +35,55 @@ def randomize(progress, status):
 
     try:
         import Randomizer as ra
+        scale_vagabonds_value = scale_vagabonds.get()
+        seed_value = seed.get()
         ra.set_scale_vagabonds(scale_vagabonds_value)
-        step = "{}...".format(steps[0])
-        unit = percentageCalculator(0, len(steps))
-        progress['value'] = unit
-        percent['text'] = "{}%".format(int(unit))
-        status['text'] = "{}".format(step)
+        if seed_value == '':
+            seed_value = str(random.randrange(sys.maxsize))
+        increase_progress(progress, status, steps, 0)
+        root.update()
+
         current_directory, parser = ra.open_data_file()
-
         soldiers, index_list = ra.parse_enemies(parser)
-
         valid_soldiers = ra.filter_soldiers(soldiers, index_list)
-        step = "{}...".format(steps[1])
-        unit = percentageCalculator(1, len(steps))
-        progress['value'] = unit
-        percent['text'] = "{}%".format(int(unit))
-        status['text'] = "{}".format(step)
+        increase_progress(progress, status, steps, 1)
+        root.update()
 
-        valid_soldiers = ra.shuffle_enemies(index_list, valid_soldiers).copy()
-        step = "{}...".format(steps[2])
-        unit = percentageCalculator(2, len(steps))
-        progress['value'] = unit
-        percent['text'] = "{}%".format(int(unit))
-        status['text'] = "{}".format(step)
+        valid_soldiers = ra.shuffle_enemies(index_list, valid_soldiers, int(seed_value)).copy()
+        increase_progress(progress, status, steps, 2)
+        root.update()
 
         enemy_blocks = ra.generate_statblock(index_list, valid_soldiers)
-        step = "{}...".format(steps[3])
-        unit = percentageCalculator(2, len(steps))
-        progress['value'] = unit
-        percent['text'] = "{}%".format(int(unit))
-        status['text'] = "{}".format(step)
+        increase_progress(progress, status, steps, 3)
+        root.update()
 
         soldiers = ra.reassign_ids(soldiers, valid_soldiers).copy()
-
-        step = "{}...".format(steps[4])
-        unit = percentageCalculator(4, len(steps))
-        progress['value'] = unit
-        percent['text'] = "{}%".format(int(unit))
-        status['text'] = "{}".format(step)
-        ra.generate_json(soldiers, enemy_blocks)
-
-        ra.repackage()
-        step = "{}...".format(steps[5])
-        unit = percentageCalculator(5, len(steps))
-        progress['value'] = unit
-        percent['text'] = "{}%".format(int(unit))
-        status['text'] = "{}".format(step)
-
-        ra.generate_RMM_directory(current_directory)
-        unit = percentageCalculator(6, len(steps))
-        progress['value'] = unit
-        percent['text'] = "{}%".format(int(unit))
-        status['text'] = "{}".format(step)
-
+        increase_progress(progress, status, steps, 4)
         root.update()
+
+        ra.generate_json(soldiers, enemy_blocks)
+        ra.repackage()
+        increase_progress(progress, status, steps, 5)
+        root.update()
+
+        ra.generate_RMM_directory(current_directory, int(seed_value))
+        increase_progress(progress, status, steps, len(steps))
+        root.update()
+        
         messagebox.showinfo('Success!', "Randomized!")
-        sys.exit()
     except Exception as e:
         messagebox.showinfo('Error!', "ERROR: {}".format(e) + "\nLet the Mod Creator know in the YMC or on the Mod Page.")
 
-def set_value(field, value):
-    field = value
-    # wow what a complex method
+def increase_progress(progress, status, steps, index):
+    if index < len(steps):
+        step = "{}...".format(steps[index])
+    else:
+        step = 'Randomized!'
+    unit = percentageCalculator(index, len(steps))
+    progress['value'] = unit
+    percent['text'] = "{}%".format(int(unit))
+    status['text'] = "{}".format(step)
+
 
 root = Tk()
 root.title("Randomizer v" + __version__)
@@ -113,6 +97,27 @@ ent = Checkbutton(root, text='Scale Vagabonds', variable=scale_vagabonds, onvalu
 row.pack(side=TOP, fill=X, padx=5, pady=5)
 ent.pack(side=TOP, fill=X)
 ToolTip(ent, msg="Scale Vagabonds to what level they spawn (no level 80 vagabonds giving you 30 levels at level 12).")
+
+seed = StringVar(master=root, value='')
+warning_text = StringVar(master=root, value='')
+warning = Label(row, text=warning_text, fg='red')
+
+def verify_seed(var, index, mode):
+    if re.match('^[0-9]*$', seed.get()):
+        warning['text'] = ""
+        warning.pack(side=TOP)
+        set_value(seed_value, seed.get())
+    else:
+        warning['text'] ="Only Enter Numbers"
+        warning.pack(side=TOP)
+        seed.set(seed.get()[:-1])
+        set_value(seed_value, seed.get()[:-1])
+
+seed.trace_add('write', verify_seed)
+set_seed = Label(row, text="Set Seed:")
+ent = Entry(row, textvariable=seed)
+set_seed.pack(side=TOP)
+ent.pack(side=TOP)
 
 runButton = Button(root, text='Randomize!', command=(lambda : randomize(progress, status)))
 percent = Label(root, text="", anchor=S) 

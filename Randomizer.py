@@ -80,8 +80,9 @@ def scale_enemy(soldier, valid_soldiers, scale_enemy_id):
 
 # This is just using out current_directory we stored at the way beginning of the program's execution to store our newly
 # packaged .bin file into an RMM compatible package. Nothing too crazy here
-def generate_RMM_directory(current_directory):
-    current_directory = os.path.join(current_directory, 'Randomizer/')
+def generate_RMM_directory(current_directory, seed):
+    seeded_name = f'Randomizer seed {seed}/'
+    current_directory = os.path.join(current_directory, seeded_name)
     os.makedirs(current_directory)
     languages = [r'de', r'en', r'es', r'fr', r'it', r'ja', r'ko', r'pt', r'ru', r'zh', r'zhs']
     for language in languages:
@@ -170,7 +171,8 @@ def generate_statblock(index_list, valid_soldiers):
         enemy_blocks[enemy.name] = enemy_block
     return enemy_blocks
 
-def shuffle_enemies(index_list, valid_soldiers):
+def shuffle_enemies(index_list, valid_soldiers, seed_value=None):
+    random.seed(seed_value)
     index_list.sort()
     random.shuffle(valid_soldiers)
     return valid_soldiers
