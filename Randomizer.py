@@ -26,8 +26,6 @@ _IGNORED_IDS = ['15363', # Mr. Masochist
                 '17990' # True Final Millenium Tower Amon
                 ]
 
-scale_vagabonds = True
-
 # Enemy class for storing enemies throughout the file
 class Enemy:
     def __init__(self, base_id, scale_id, name, stats, scaled_stats):
@@ -43,12 +41,9 @@ def get_id(enemy):
         return -1
     return int(enemy.base_id)
 
-def set_scale_vagabonds(new_value):
-    scale_vagabonds = new_value
-
 # This function utilizes a naive method of scaling enemies by simply
 # copying the stats from the original enemy to the enemy replacing it.
-def scale_enemy(soldier, valid_soldiers, scale_enemy_id):
+def scale_enemy(soldier, valid_soldiers, scale_enemy_id, scale_vagabonds):
     stat_names = ['mission', 'group', 'npc_list', 'encounter_kind', 'hp', 'enemy_level', 'exp_point', 'money_point', 'money_drop_ratio', 'job_exp_point', 'attack', 'defence', 'dodge', 'accuracy', 'mp', 'sp_attack', 'base_wait']
     invested_vagabonds = ['17203', '17989', '17205', '17204', '15701']
     soldier.scale_id = scale_enemy_id
@@ -148,12 +143,12 @@ def reassign_ids(soldiers, valid_soldiers):
 # it makes the file look good. The scale_id and scaled_stats parameters for the Enemy object are used here, and the code 
 # is easily readable despite containing many if and for statements. Look for the function explanation of scale_enemy for 
 # more information.
-def generate_statblock(index_list, valid_soldiers):
+def generate_statblock(index_list, valid_soldiers, scale_vagabonds):
     enemy_blocks = {}
     for i in range(len(index_list)):
         enemy = valid_soldiers[i]
         enemy_block = f'  \"{index_list[i]}\": {"{"}\n'
-        enemy = scale_enemy(enemy, valid_soldiers, index_list[i])
+        enemy = scale_enemy(enemy, valid_soldiers, index_list[i], scale_vagabonds)
         enemy_block += f'    \"{enemy.name}\": {"{"}\n      '
         for stat in enemy.scaled_stats:
             value = enemy.scaled_stats[stat]

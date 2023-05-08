@@ -35,9 +35,8 @@ def randomize(progress, status):
 
     try:
         import Randomizer as ra
-        scale_vagabonds_value = scale_vagabonds.get()
+        scale_vagabonds_value = bool(scale_vagabonds.get())
         seed_value = seed.get()
-        ra.set_scale_vagabonds(scale_vagabonds_value)
         if seed_value == '':
             seed_value = str(random.randrange(sys.maxsize))
         increase_progress(progress, status, steps, 0)
@@ -53,7 +52,7 @@ def randomize(progress, status):
         increase_progress(progress, status, steps, 2)
         root.update()
 
-        enemy_blocks = ra.generate_statblock(index_list, valid_soldiers)
+        enemy_blocks = ra.generate_statblock(index_list, valid_soldiers, scale_vagabonds_value)
         increase_progress(progress, status, steps, 3)
         root.update()
 
@@ -88,12 +87,13 @@ def increase_progress(progress, status, steps, index):
 root = Tk()
 root.title("Randomizer v" + __version__)
 root.geometry("600x320")
+root.minsize(600, 320)
 
 # root.iconbitmap('logo.ico')
 
 row = Frame(root)
 scale_vagabonds = IntVar(master=root, value=1)
-ent = Checkbutton(root, text='Scale Vagabonds', variable=scale_vagabonds, onvalue=1, offvalue=0, command=(lambda s=scale_vagabonds: set_value(scale_vagabonds_value, s.get())))
+ent = Checkbutton(root, text='Scale Vagabonds', variable=scale_vagabonds, onvalue=1, offvalue=0)
 row.pack(side=TOP, fill=X, padx=5, pady=5)
 ent.pack(side=TOP, fill=X)
 ToolTip(ent, msg="Scale Vagabonds to what level they spawn (no level 80 vagabonds giving you 30 levels at level 12).")
