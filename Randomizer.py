@@ -23,7 +23,8 @@ _IGNORED_IDS = ['15363', # Mr. Masochist
                 '17621', '17829', # Right Arm of Cleaning Robots
                 '17622', '17830', # Left Arm of Cleaning Robots 
                 '17828', '15216', # Cleaning Robots
-                '17990' # True Final Millenium Tower Amon
+                '17990', # True Final Millenium Tower Amon
+                '16532', '16522' # Placeholder party members
                 ]
 
 # Enemy class for storing enemies throughout the file
