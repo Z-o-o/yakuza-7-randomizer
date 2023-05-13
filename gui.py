@@ -10,7 +10,7 @@ from tkinter import messagebox
 from tktooltip import ToolTip
 
 __author__ = "Zennith Boerger"
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __license__ = "MIT"
 
 scale_vagabonds_value = 1
