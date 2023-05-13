@@ -5,5 +5,6 @@
 5. Improve Scaling (Heals, Summons)
 6. Music Randomizing
 7. Skill Randomizing
+8. Add option to allow players to set percentage for each enemy to be reandomized to a boss enemy
 
 8. Utilize Dummy_all and/or Dummy_Dungeon to do a 7 party member mod?
