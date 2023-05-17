@@ -44,17 +44,25 @@ def get_id(enemy):
 
 # This function utilizes a naive method of scaling enemies by simply
 # copying the stats from the original enemy to the enemy replacing it.
+# there is additional logic for dealing with Invested Vagabonds but for the most part
+# this is how the scaling works
 def scale_enemy(soldier, valid_soldiers, scale_enemy_id, scale_vagabonds):
     stat_names = ['mission', 'group', 'npc_list', 'encounter_kind', 'hp', 'enemy_level', 'exp_point', 'money_point', 'money_drop_ratio', 'job_exp_point', 'attack', 'defence', 'dodge', 'accuracy', 'mp', 'sp_attack', 'base_wait']
     invested_vagabonds = ['17203', '17989', '17205', '17204', '15701']
     soldier.scale_id = scale_enemy_id
     soldier.scaled_stats = soldier.stats.copy()
+    same_level_enemies = []
     
     original_stats = {}
     for s in valid_soldiers:
         if s.base_id == scale_enemy_id:
             original_stats = s.stats
             break
+    
+    scaled_level = int(original_stats['enemy_level'])
+    for s in valid_soldiers:
+        if (scaled_level - 1) <= int(s.stats['enemy_level']) <= (scaled_level + 2):
+            same_level_enemies.append(int(s.base_id)) 
 
     vagabond_scaled = (invested_vagabonds.count(soldier.base_id)) != 0
     enemy_scaled = (invested_vagabonds.count(scale_enemy_id)) != 0
@@ -83,9 +91,12 @@ def scale_enemy(soldier, valid_soldiers, scale_enemy_id, scale_vagabonds):
     for stat in stat_names:
         if enemy_scaled and ['hp', 'exp_point', 'money_point', 'money_drop_ratio', 'job_exp_point'].count(stat) != 0:
             continue
+        if soldier.scaled_stats['call_enemy_id'] != 0:
+            soldier.scaled_stats['call_enemy_id'] = random.choice(same_level_enemies)
         soldier.scaled_stats[stat] = original_stats[stat]
     return soldier
 
+# This is the method used to scale enemies that replace Vagabonds so that they don't give the same amount of XP
 def scale_enemy_vagabond(soldier, hp_lower, hp_higher, exp, money_lower, money_higher, job_exp):
     soldier.scaled_stats['hp'] = int(random.randint(hp_lower, hp_higher))
     soldier.scaled_stats['exp_point'] = exp
