@@ -1,1 +1,2 @@
 1. Any enemy/enemy whose model can't be retrieved is replaced by dummy guy, and sometimes a plain all black clothing guy
+2. Clara sidequest softlocks, might have to unrandomize Clara
