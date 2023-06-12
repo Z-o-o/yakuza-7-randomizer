@@ -90,7 +90,7 @@ root.title("Randomizer v" + __version__)
 root.geometry("600x320")
 root.minsize(600, 320)
 
-# root.iconbitmap('logo.ico')
+root.iconbitmap(os.path.join(sys._MEIPASS, 'logo.ico'))
 
 row = Frame(root)
 scale_vagabonds = IntVar(master=root, value=1)
@@ -102,6 +102,8 @@ ToolTip(ent, msg="Scale Vagabonds to what level they spawn (no level 80 vagabond
 seed = StringVar(master=root, value='')
 warning_text = StringVar(master=root, value='')
 warning = Label(row, text=warning_text, fg='red')
+warning['text'] = ""
+warning.pack(side=TOP)
 
 def verify_seed(var, index, mode):
     if re.match('^[0-9]*$', seed.get()):
