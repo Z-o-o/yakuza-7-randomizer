@@ -19,6 +19,7 @@ _IGNORED_IDS = ['15363', # Mr. Masochist
                 '15435', # Ishioda Wrecking Ball
                 '15603', # Normal Majima
                 '15604', # Normal Saejima
+                '15620', # Ch.13 Sawashiro
                 '15640', # Normal Kiryu
                 '15647', # Ryo Aoki
                 '17621', '17829', # Right Arm of Cleaning Robots
@@ -214,12 +215,32 @@ def generate_statblock(index_list, soldier_data, randomized, scale_vagabonds):
 def shuffle_enemies(valid_soldiers, bosses, boss_weight, seed_value=None):
     random.seed(seed_value)
     randomized = valid_soldiers.copy()
+    ushio_index = 0
+    ushio = Enemy('', '', '', {}, {})
+    for enemy in randomized:
+        if enemy.base_id == '15220':
+            ushio_index = randomized.index(enemy)
+            ushio = enemy.__copy__()
+            break
+    bosses_done = []
     for enemy in randomized:
         if random.randint(1, 100) <= boss_weight:
+            if len(bosses_done) == len(bosses):
+                print("Reseting bosses_done")
+                bosses_done = []
             boss = random.choice(bosses)
+            while bosses_done.count(boss.base_id) != 0:
+                boss = random.choice(bosses)
+            bosses_done.append(boss.base_id)
             randomized[randomized.index(enemy)].name = boss.name
             randomized[randomized.index(enemy)].stats = boss.stats.copy()
     random.shuffle(randomized)
+    if int(randomized[ushio_index].stats['life_gauge_type']) == 3:
+        randomized[ushio_index].base_id = ushio.base_id
+        randomized[ushio_index].scale_id = ushio.scale_id
+        randomized[ushio_index].name = ushio.name
+        randomized[ushio_index].stats = ushio.stats
+        randomized[ushio_index].scaled_stats = ushio.scaled_stats
 
     return valid_soldiers, randomized.copy()
 
