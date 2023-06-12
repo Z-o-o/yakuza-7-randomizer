@@ -1,1 +1,1 @@
-py -m PyInstaller Randomizer.spec
+py -m PyInstaller randomizer.spec
