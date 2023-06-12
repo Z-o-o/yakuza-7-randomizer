@@ -131,6 +131,7 @@ def generate_RMM_directory(current_directory, seed):
         for directory in directories:
             rmm_directory = os.path.join(rmm_directory, directory)
             os.makedirs(rmm_directory)
+        shutil.copy(os.path.join(sys._MEIPASS, r"rpg_enemy_arts_data.bin"), os.path.join(rmm_directory, r"rpg_enemy_arts_data.bin"))
         shutil.copy(os.path.join(sys._MEIPASS, r"character_npc_soldier_personal_data.bin"), os.path.join(rmm_directory, r"character_npc_soldier_personal_data.bin"))
 
 def repackage():
@@ -250,7 +251,7 @@ def filter_soldiers(soldiers, index_list):
     soldier_data = []
     valid_soldiers = []
     bosses = []
-    bosses_list = ['15603', '15604', '15640', '17990']
+    bosses_list = ['15603', '15604', '15640', '17991', '17992', '17993']
     for s in soldiers:
         # there are a lot of blank soldiers, either due to a processing error I make or just how ijson parses the file
         # but either way we don't want them so we skip them
