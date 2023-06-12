@@ -20,10 +20,14 @@ _IGNORED_IDS = ['15363', # Mr. Masochist
                 '15603', # Normal Majima
                 '15604', # Normal Saejima
                 '15640', # Normal Kiryu
+                '15647', # Ryo Aoki
                 '17621', '17829', # Right Arm of Cleaning Robots
                 '17622', '17830', # Left Arm of Cleaning Robots 
                 '17828', '15216', # Cleaning Robots
                 '17990', # True Final Millenium Tower Amon
+                '17991', # Summoned Majima
+                '17992', # Summoned Saejima
+                '17993', # Summoned Kiryu
                 '16532', '16522' # Placeholder party members
                 ]
 
@@ -35,6 +39,12 @@ class Enemy:
         self.name = name
         self.stats = stats
         self.scaled_stats = scaled_stats
+    #def __copy__(self):
+        #return Enemy(self.base_id, self.scale_id, self.name, self.stats, self.scaled_stats)
+    def __copy__(self):
+        obj = type(self).__new__(self.__class__)
+        obj.__dict__.update(self.__dict__)
+        return obj
 
 # Sorting function based on base_id
 def get_id(enemy):
@@ -46,21 +56,21 @@ def get_id(enemy):
 # copying the stats from the original enemy to the enemy replacing it.
 # there is additional logic for dealing with Invested Vagabonds but for the most part
 # this is how the scaling works
-def scale_enemy(soldier, valid_soldiers, scale_enemy_id, scale_vagabonds):
+def scale_enemy(soldier, soldier_data, scale_enemy_id, scale_vagabonds):
     stat_names = ['mission', 'group', 'npc_list', 'encounter_kind', 'hp', 'enemy_level', 'exp_point', 'money_point', 'money_drop_ratio', 'job_exp_point', 'attack', 'defence', 'dodge', 'accuracy', 'mp', 'sp_attack', 'base_wait']
-    invested_vagabonds = ['17203', '17989', '17205', '17204', '15701']
+    invested_vagabonds = ['17203', '17989', '17205', '17204', '15701', '15971']
     soldier.scale_id = scale_enemy_id
     soldier.scaled_stats = soldier.stats.copy()
     same_level_enemies = []
     
     original_stats = {}
-    for s in valid_soldiers:
+    for s in soldier_data:
         if s.base_id == scale_enemy_id:
             original_stats = s.stats
             break
     
     scaled_level = int(original_stats['enemy_level'])
-    for s in valid_soldiers:
+    for s in soldier_data:
         if (scaled_level - 1) <= int(s.stats['enemy_level']) <= (scaled_level + 2):
             same_level_enemies.append(int(s.base_id)) 
 
@@ -83,6 +93,8 @@ def scale_enemy(soldier, valid_soldiers, scale_enemy_id, scale_vagabonds):
             soldier.scaled_stats = scale_enemy_vagabond(soldier, 320, 1744, 400, 800, 1300, 360).copy()
         if original_stats['enemy_level'] == 35:
             soldier.scaled_stats = scale_enemy_vagabond(soldier, 389, 666, 400, 1100, 1500, 360).copy()
+        if original_stats['enemy_level'] == 41:
+            soldier.scaled_stats = scale_enemy_vagabond(soldier, 798, 798, 7500, 0, 30000, 6750).copy()
         if original_stats['enemy_level'] == 50:
             soldier.scaled_stats = scale_enemy_vagabond(soldier, 984, 984, 2574, 3000, 4800, 2317).copy()
         if original_stats['enemy_level'] == 80:
@@ -158,7 +170,7 @@ def generate_json(soldiers, enemy_blocks):
                     enemy_block += f'\"{stat}\": {value},\n      '
             file_write.write(enemy_block)
         else:
-            file_write.write(enemy_blocks[s.name])
+            file_write.write(enemy_blocks[s.name + str(s.base_id)])
 
     file_write.write("}")
     file_write.close()
@@ -166,8 +178,8 @@ def generate_json(soldiers, enemy_blocks):
 # We reassign enemy IDs here to ensure that they are placed into the file at the enemy that they replaced.
 # Although it may be possible to bypass this by using scale_id when generating the new JSON file, it currently 
 # works fine, so we don't need to fix it.
-def reassign_ids(soldiers, valid_soldiers):
-    for soldier in valid_soldiers:
+def reassign_ids(soldiers, randomized):
+    for soldier in randomized:
         soldiers[soldiers.index(soldier)].base_id = soldier.scale_id
     return soldiers
 
@@ -175,12 +187,13 @@ def reassign_ids(soldiers, valid_soldiers):
 # it makes the file look good. The scale_id and scaled_stats parameters for the Enemy object are used here, and the code 
 # is easily readable despite containing many if and for statements. Look for the function explanation of scale_enemy for 
 # more information.
-def generate_statblock(index_list, valid_soldiers, scale_vagabonds):
+def generate_statblock(index_list, soldier_data, randomized, scale_vagabonds):
     enemy_blocks = {}
+    index_list.sort()
     for i in range(len(index_list)):
-        enemy = valid_soldiers[i]
+        enemy = randomized[i]
         enemy_block = f'  \"{index_list[i]}\": {"{"}\n'
-        enemy = scale_enemy(enemy, valid_soldiers, index_list[i], scale_vagabonds)
+        enemy = scale_enemy(enemy, soldier_data, index_list[i], scale_vagabonds)
         enemy_block += f'    \"{enemy.name}\": {"{"}\n      '
         for stat in enemy.scaled_stats:
             value = enemy.scaled_stats[stat]
@@ -195,29 +208,43 @@ def generate_statblock(index_list, valid_soldiers, scale_vagabonds):
                 enemy_block += f'\"{stat}\": \"{value}\",\n      '
             else:
                 enemy_block += f'\"{stat}\": {value},\n      '
-        enemy_blocks[enemy.name] = enemy_block
+        enemy_blocks[enemy.name + str(enemy.scale_id)] = enemy_block
     return enemy_blocks
 
-def shuffle_enemies(index_list, valid_soldiers, seed_value=None):
+def shuffle_enemies(valid_soldiers, bosses, boss_weight, seed_value=None):
     random.seed(seed_value)
-    index_list.sort()
-    random.shuffle(valid_soldiers)
-    return valid_soldiers
+    randomized = valid_soldiers.copy()
+    for enemy in randomized:
+        if random.randint(1, 100) <= boss_weight:
+            boss = random.choice(bosses)
+            randomized[randomized.index(enemy)].name = boss.name
+            randomized[randomized.index(enemy)].stats = boss.stats.copy()
+    random.shuffle(randomized)
+
+    return valid_soldiers, randomized.copy()
 
 # Now we process soldiers to filter out all test/invalid enemies (enemies who have 0 hp in the files)
 # We also keep track of what indexes are "valid" indexes for future processing as well
 def filter_soldiers(soldiers, index_list):
+    soldier_data = []
     valid_soldiers = []
+    bosses = []
+    bosses_list = ['15603', '15604', '15640', '17990']
     for s in soldiers:
         # there are a lot of blank soldiers, either due to a processing error I make or just how ijson parses the file
         # but either way we don't want them so we skip them
         if s.base_id == "" or s.name == "" or s.stats == {}:
             continue
         # check to see if the enemy is test/invalid/ignored
+        if bosses_list.count(s.base_id) != 0:
+            bosses.append(s)
         if int(s.stats['hp']) > 0 and _IGNORED_IDS.count(s.base_id) == 0:
+            soldier_data.append(s.__copy__())
             valid_soldiers.append(s)
             index_list.append(s.base_id)
-    return valid_soldiers
+            if int(s.stats['life_gauge_type']) == 3:
+                bosses.append(s)
+    return valid_soldiers, soldier_data, bosses
 
 # We process the JSON file to retrieve the base_id, name, and stats of the current enemy, such as True 
 # Final Millenium Tower Amon (base_id = '17790', name = 'yazawa_sfm_boss_amon', stats = Lots of stuff).
