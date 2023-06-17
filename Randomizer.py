@@ -22,6 +22,7 @@ _IGNORED_IDS = ['15363', # Mr. Masochist
                 '15620', # Ch.13 Sawashiro
                 '15640', # Normal Kiryu
                 '15647', # Ryo Aoki
+                '15210', # Clara-chan fight
                 '17621', '17829', # Right Arm of Cleaning Robots
                 '17622', '17830', # Left Arm of Cleaning Robots 
                 '17828', '15216', # Cleaning Robots
@@ -223,16 +224,16 @@ def shuffle_enemies(valid_soldiers, bosses, boss_weight, seed_value=None):
             ushio_index = randomized.index(enemy)
             ushio = enemy.__copy__()
             break
-    bosses_done = []
+    bosses_copy = bosses.copy()
     for enemy in randomized:
         if random.randint(1, 100) <= boss_weight:
-            if len(bosses_done) == len(bosses):
-                print("Reseting bosses_done")
-                bosses_done = []
-            boss = random.choice(bosses)
-            while bosses_done.count(boss.base_id) != 0:
-                boss = random.choice(bosses)
-            bosses_done.append(boss.base_id)
+            if len(bosses_copy) == 0:
+                bosses_copy = bosses.copy()
+            boss = random.choice(bosses_copy)
+            bosses_copy.remove(boss)
+            for b in bosses_copy:
+                if b.stats['name'] == boss.stats['name']:
+                    bosses_copy.remove(b)
             randomized[randomized.index(enemy)].name = boss.name
             randomized[randomized.index(enemy)].stats = boss.stats.copy()
     random.shuffle(randomized)
@@ -251,7 +252,7 @@ def filter_soldiers(soldiers, index_list):
     soldier_data = []
     valid_soldiers = []
     bosses = []
-    bosses_list = ['15603', '15604', '15640', '17991', '17992', '17993']
+    bosses_list = ['15603', '15604', '15640', '15210']
     for s in soldiers:
         # there are a lot of blank soldiers, either due to a processing error I make or just how ijson parses the file
         # but either way we don't want them so we skip them
