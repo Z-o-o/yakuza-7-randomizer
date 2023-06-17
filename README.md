@@ -2,20 +2,20 @@
 A modification for Yakuza: Like A Dragon (A.K.A Yakuza 7) that randomizes enemies and scales them accordingly throughout the game.
 
 # A Warning on Stability:
-This version (0.1.2) is still quite buggy and not every enemy has been tested to see where they break the game.
+This version (0.1.3) is mostly stable, every fight in the game should be completable.
 If your game crashes, softlocks, etc. when trying to fight a specific enemy, then my best suggestion would be to let me know on either 
 the Yakuza Modding Discord Mod-Feedback or leave a reply on the mod page detailing what enemy you were trying to fight, and if possible
 inlcude your modified Randomizer mod folder. After sending me feedback then regenerate your enemies as this should
 randomize the enemy that was causing issues away (hopefully for the rest of your playthrough).
 
-# How to use (RMM):
+# How to use (Ryu Mod Manager):
  ## Step 1:
   
   Download the Randomizer.exe file. This will generate an RMM compatible mod folder with the randomized enemy file.
   
  ## Step 2:
   
-  Simply run Randomizer.exe, and once it is completed drag the generated "Randomizer" folder into your mods folder
+  Simply run Randomizer.exe, and once it is completed drag the generated "Randomizer" folder into your mods folder (located in your game files)
  
  ## Step 3:
   You have now successfully randomized your enemies in Yakuza: Like A Dragon. Nothing else is required and enjoy! If you'd like to randomize your
