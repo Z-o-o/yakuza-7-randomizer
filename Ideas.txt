@@ -1,6 +1,6 @@
 2. Job Randomizing
 3. Item Drop randomizing
-4. Model Randomizing
+4. Model Randomizing (IGNORED_IDS = (model ID 11213) and character m_no_polygon_mesh (character ID 16653))
 6. Music Randomizing
 7. Skill Randomizing
 8. Improve boss boss weight
