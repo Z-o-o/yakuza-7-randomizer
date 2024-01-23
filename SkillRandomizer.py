@@ -18,7 +18,7 @@ _IGNORED_IDS = [243, # Tenacious Fist,
                 852, # Honey Hunt
                 851, # Freelancer Treasure Hunt
                 1175, # Summon Bandmate
-                1503, 131, 508, 717, 722, 757, 760, 762, 800, 804, 1170, 1175, 1316
+                1503, 131, 508, 717, 722, 757, 760, 762, 800, 804, 1170, 1175, 1316, 1156
                 ]
 
 class Skill:
