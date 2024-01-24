@@ -18,7 +18,8 @@ _IGNORED_IDS = [243, # Tenacious Fist,
                 852, # Honey Hunt
                 851, # Freelancer Treasure Hunt
                 1175, # Summon Bandmate
-                1503, 131, 508, 717, 722, 757, 760, 762, 800, 804, 1170, 1175, 1316, 1156
+                1503, 131, 508, 717, 722, 757, 760, 762, 800, 804, 1170, 1175, 1316, 1156, # Call Backup
+                1255, 1254, 1253, 1252, 1251, 1250 # All Tag Team moves except Essence of Mayham
                 ]
 
 class Skill:
