@@ -59,4 +59,4 @@ file_write.close()
 
 total_time = time.time() - start
 
-print("Done after " + str(int(total_time / 60)) + "minutes")
+print("Done after " + str(int(total_time / 60)) + " minutes")

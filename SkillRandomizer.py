@@ -53,7 +53,7 @@ def shuffle_skills(skills, seed_value=None):
     valid_skills = []
     valid_skills_indexes = []
     for skill in skills:
-        if skill.stats['reARMP_isValid'] == '1' and 'name' in skill.stats and skill.stats['category'] != 11 and skill.stats['use_cond'] != 30 and _IGNORED_IDS.count(skill.id) == 0:
+        if skill.stats['reARMP_isValid'] == '1' and 'name' in skill.stats and skill.stats['category'] != 11 and skill.stats['use_cond'] != 30 and _IGNORED_IDS.count(int(skill.id)) == 0:
             valid_skills.append(skill.copy())
             valid_skills_indexes.append(skill.id)
         
@@ -64,7 +64,7 @@ def get_skills_list(skills, valid_skills, valid_skills_indexes, mp_cost_og, empt
     skills_list = []
 
     for i in range(_SKILL_AMOUNT):
-        if valid_skills_indexes.count(i) != 0:
+        if valid_skills_indexes.count(str(i)) != 0:
             next_skill = valid_skills.pop()
             skills_list.append(next_skill)
         else:
