@@ -71,8 +71,8 @@ def skill_rando(progress, status, steps, current_directory, seed_value, sa):
     increase_progress(progress, status, steps, 0)
     root.update()
 
-    file = sa.open_data_file()
-    skills = sa.parse_skills(file)
+    sa.open_data_file()
+    skills = sa.parse_skills()
     increase_progress(progress, status, steps, 1)
     root.update()
 

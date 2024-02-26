@@ -8,6 +8,7 @@ import msvcrt as m
 import os
 import shutil
 import time
+import skill_data
 
 _SKILL_AMOUNT = 1750
 _IGNORED_IDS = [243, # Tenacious Fist,
@@ -27,7 +28,6 @@ class Skill:
         self.id = id
         self.name = name
         self.stats = stats
-        self.new_stats = new_stats
     def copy(self):
         obj = type(self).__new__(self.__class__)
         obj.__dict__.update(self.__dict__)
@@ -37,27 +37,10 @@ class Skill:
 # was run from, since the .exe uses the root's temp folder for processing.
 def open_data_file():
     os.chdir(sys._MEIPASS)
-    file = open(r'rpg_skill.bin.json', r'r', encoding="utf8")
-    return file
 
 
-def parse_skills(f):
-    skills = []
-    for skill_id in range(_SKILL_AMOUNT):
-        # if ((skill_id/_SKILL_AMOUNT) * 100) % 10 == 0:
-        #     print(str((skill_id/_SKILL_AMOUNT) * 100) + "% Complete")
-        f.seek(0)
-        skill = Skill('', '', {}, {})
-        objects = ijson.items(f, str(skill_id))
-        for stat in objects:
-            skill.id = skill_id
-            skill.name = list(stat.keys())[0]
-            data = str(stat[list(stat.keys())[0]]).replace("'", "\"").replace("Decimal(\"", "").replace("\")", "").replace("True", "true").replace("False", "false").replace(", ", ",")
-            data = data.replace('""We Are the Globe""', '"\\"We Are the Globe\\""').replace('""Scar Me""', '"\\"Scar Me\\""').replace('""Relax""', '"\\"Relax\\""').replace('""Your Wackiest Dreams""', '"\\"Your Wackiest Dreams\\""').replace('""Endless Desire""', '"\\"Endless Desire\\""').replace('""Those Who Protect""', '"\\"Those Who Protect\\""').replace('""Be My Shelter""', '"\\"Be My Shelter\\""')
-            skill.stats = json.loads(data)
-            skill.new_stats = skill.stats.copy()
-        skills.append(skill)
-    f.close()
+def parse_skills():
+    skills = skill_data.skills
     return skills
 
 def shuffle_skills(skills, seed_value=None):
